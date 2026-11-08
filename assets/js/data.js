@@ -9,3 +9,67 @@ if (SEASON_DATA) {
   SEASONS['2025/26'].schedule = SEASON_DATA.schedule || [];
   SEASONS['2025/26'].matches = SEASON_DATA.matches || [];
 }
+
+/* =========================================================
+   TANÉVI NAPTÁR — ünnepek, iskolai szünetek, első/utolsó tanítási nap
+   Forrás: BM rendelet a tanév rendjéről + munkaszüneti napokról szóló jogszabály.
+   Az admin felület később ezeket a napokat (és az eseményeket) szerkesztheti.
+   ========================================================= */
+const SCHOOL_YEARS = {
+  '2025/26': {
+    label: '2025/2026-os tanév',
+    months: ['2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'],
+    first: '2025-09-01',            /* első tanítási nap */
+    last: '2026-06-15',             /* utolsó tanítási nap — technikum: minden évben június 15. */
+    breaks: [
+      { name: 'Őszi szünet',    from: '2025-10-23', to: '2025-11-02' },
+      { name: 'Téli szünet',    from: '2025-12-20', to: '2026-01-04' },
+      { name: 'Tavaszi szünet', from: '2026-04-02', to: '2026-04-12' },
+      { name: 'Nyári szünet',   from: '2026-06-16', to: '2026-08-31' }
+    ],
+    holidays: [
+      { d: '2025-10-23', name: 'Az 1956-os forradalom ünnepe' },
+      { d: '2025-11-01', name: 'Mindenszentek' },
+      { d: '2025-12-25', name: 'Karácsony' },
+      { d: '2025-12-26', name: 'Karácsony' },
+      { d: '2026-01-01', name: 'Újév' },
+      { d: '2026-03-15', name: 'Az 1848-as forradalom ünnepe' },
+      { d: '2026-04-03', name: 'Nagypéntek' },
+      { d: '2026-04-05', name: 'Húsvétvasárnap' },
+      { d: '2026-04-06', name: 'Húsvéthétfő' },
+      { d: '2026-05-01', name: 'A munka ünnepe' },
+      { d: '2026-05-24', name: 'Pünkösdvasárnap' },
+      { d: '2026-05-25', name: 'Pünkösdhétfő' },
+      { d: '2026-08-20', name: 'Az államalapítás ünnepe' },
+      { d: '2026-08-21', name: 'Áthelyezett pihenőnap' }
+    ]
+  },
+  '2026/27': {
+    label: '2026/2027-es tanév',
+    months: ['2026-09','2026-10','2026-11','2026-12','2027-01','2027-02','2027-03','2027-04','2027-05','2027-06','2027-07','2027-08'],
+    first: '2026-09-01',            /* első tanítási nap */
+    last: '2027-06-15',             /* utolsó tanítási nap — technikum: minden évben június 15. */
+    breaks: [
+      { name: 'Őszi szünet',    from: '2026-10-23', to: '2026-11-01' },
+      { name: 'Téli szünet',    from: '2026-12-19', to: '2027-01-03' },
+      { name: 'Tavaszi szünet', from: '2027-03-25', to: '2027-04-04' },
+      { name: 'Nyári szünet',   from: '2027-06-16', to: '2027-08-31' }
+    ],
+    holidays: [
+      { d: '2026-10-23', name: 'Az 1956-os forradalom ünnepe' },
+      { d: '2026-11-01', name: 'Mindenszentek' },
+      { d: '2026-12-24', name: 'Szenteste (pihenőnap)' },
+      { d: '2026-12-25', name: 'Karácsony' },
+      { d: '2026-12-26', name: 'Karácsony' },
+      { d: '2027-01-01', name: 'Újév' },
+      { d: '2027-03-15', name: 'Az 1848-as forradalom ünnepe' },
+      { d: '2027-03-26', name: 'Nagypéntek' },
+      { d: '2027-03-28', name: 'Húsvétvasárnap' },
+      { d: '2027-03-29', name: 'Húsvéthétfő' },
+      { d: '2027-05-01', name: 'A munka ünnepe' },
+      { d: '2027-05-16', name: 'Pünkösdvasárnap' },
+      { d: '2027-05-17', name: 'Pünkösdhétfő' },
+      { d: '2027-08-20', name: 'Az államalapítás ünnepe' }
+    ]
+  }
+};

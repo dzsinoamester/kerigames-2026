@@ -252,9 +252,46 @@ function renderStandings(){
   ).join('');
 }
 
-/* ---------- calendar ---------- */
+/* ---------- calendar (lapozható tanévi naptár) ---------- */
 let daysByDate = {};
 let selectedKey = null;
+let calMonths = [];
+let calIdx = 0;
+let calSeason = null;
+
+function schoolYear(){
+  if (typeof SCHOOL_YEARS === 'undefined') return null;
+  return SCHOOL_YEARS[state.season] || SCHOOL_YEARS['2026/27'] || null;
+}
+
+/* ünnepek + szünetek + első/utolsó tanítási nap → napi leképezés (memoizált, admin-kész) */
+function schoolDays(sy){
+  if (!sy) return {};
+  if (sy._days) return sy._days;
+  const map = {};
+  (sy.holidays || []).forEach(h => { map[h.d] = { type: 'holiday', name: h.name }; });
+  (sy.breaks || []).forEach(b => {
+    const to = new Date(b.to + 'T00:00:00');
+    const d = new Date(b.from + 'T00:00:00');
+    while (d <= to){
+      const k = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      if (!map[k]) map[k] = { type: 'brk', name: b.name };
+      d.setDate(d.getDate() + 1);
+    }
+  });
+  if (sy.first) map[sy.first] = { type: 'first', name: 'Első tanítási nap' };
+  if (sy.last) map[sy.last] = { type: 'last', name: 'Utolsó tanítási nap' };
+  sy._days = map;
+  return map;
+}
+
+const SCHOOL_TYPE_LABEL = { holiday: 'Ünnepnap', brk: 'Tanítási szünet', first: 'Első tanítási nap', last: 'Utolsó tanítási nap' };
+const SCHOOL_TYPE_DESC = {
+  holiday: 'Munkaszüneti nap — nincs tanítás.',
+  brk: 'Iskolai szünet — nincs tanítás.',
+  first: 'A tanév első tanítási napja.',
+  last: 'A tanév utolsó tanítási napja.'
+};
 
 function dayInfo(key){
   const matches = daysByDate[key] || [];
@@ -263,7 +300,9 @@ function dayInfo(key){
   if (matches.length){
     type = matches.some(x => /döntő/i.test(x.stage || '')) ? 'final' : 'match';
   }
-  return { info, matches, type };
+  const sy = schoolYear();
+  const school = sy ? (schoolDays(sy)[key] || null) : null;
+  return { info, matches, type, school };
 }
 
 function buildMonth(hostId, year, month){
@@ -289,14 +328,17 @@ function buildMonth(hostId, year, month){
     const cell = document.createElement('div');
     cell.className = 'cal-day';
     cell.innerHTML = '<span>' + d + '</span><span class="dot"></span>';
-    if (info.type){
+    if (info.type || info.school){
       cell.classList.add('has');
       if (info.type === 'deadline') cell.classList.add('deadline');
       if (info.type === 'final') cell.classList.add('final');
+      if (!info.type && info.school) cell.classList.add(info.school.type); /* holiday / brk / first / last */
       cell.setAttribute('role', 'button');
       cell.setAttribute('tabindex', '0');
       cell.setAttribute('data-date', key);
-      cell.setAttribute('title', info.info ? info.info.title : DAY_LABEL[info.type]);
+      cell.setAttribute('title', info.info ? info.info.title
+        : info.type ? DAY_LABEL[info.type]
+        : (info.school.name + ' — ' + SCHOOL_TYPE_LABEL[info.school.type]));
       const pick = () => selectDay(key, cell);
       cell.addEventListener('click', pick);
       cell.addEventListener('keydown', e => {
@@ -315,11 +357,15 @@ function selectDay(key, cell){
   if (!box) return;
   const parts = key.split('-');
   const info = dayInfo(key);
-  const sub = (+parts[0]) + '. ' + MONTHS_HU[+parts[1] - 1] + ' ' + (+parts[2]) + '. · ' +
-    (info.type ? DAY_LABEL[info.type] : 'Fontos dátum');
+  const label = info.type ? DAY_LABEL[info.type]
+    : info.school ? SCHOOL_TYPE_LABEL[info.school.type] : 'Fontos dátum';
+  const sub = (+parts[0]) + '. ' + MONTHS_HU[+parts[1] - 1] + ' ' + (+parts[2]) + '. · ' + label;
   let html = '<div class="cd-sub">' + esc(sub) + '</div>';
   if (info.info){
     html += '<h4>' + esc(info.info.title) + '</h4><p style="color:var(--ink-2);margin:0">' + esc(info.info.desc) + '</p>';
+  } else if (info.school && !info.matches.length){
+    html += '<h4>' + esc(info.school.name) + '</h4>' +
+      '<p style="color:var(--ink-2);margin:0">' + esc(SCHOOL_TYPE_DESC[info.school.type]) + '</p>';
   } else {
     html += '<h4>' + (info.matches.length ? 'Mérkőzések' : 'Nincs program') + '</h4>';
   }
@@ -329,8 +375,10 @@ function selectDay(key, cell){
       '<span class="cd-time">' + esc(m.time || 'TBA') + '</span></div>'
     ).join('') + '</div>';
     html += '<a href="#merkozesek" class="cd-jump">Ugrás a mérkőzésekhez →</a>';
-  } else if (!info.info){
+  } else if (!info.info && !info.school){
     html += '<p class="cd-empty">Ezen a napon nincs kiírt mérkőzés.</p>';
+  } else if (info.school && info.matches.length){
+    html += '<p class="cd-empty">Ezen a napon tanítási szünet van, mégis van kiírt mérkőzés.</p>';
   }
   box.innerHTML = html;
 }
@@ -347,52 +395,142 @@ function renderCalendar(){
     (daysByDate[k] = daysByDate[k] || []).push(m);
   });
 
-  const keys = Object.keys(daysByDate).sort();
-  const hasData = keys.length > 0;
+  const sy = schoolYear();
+  const months = (sy && sy.months ? sy.months : []).map(ym => ({
+    ym, y: +ym.slice(0, 4), m: +ym.slice(5, 7)
+  }));
+  const hasData = Object.keys(daysByDate).length > 0;
+  const calNote = $('#calNote');
 
-  if (!hasData){
+  if (!months.length){
     host.innerHTML =
       '<div class="empty-state">' +
         '<div class="empty-icon">📅</div>' +
-        '<h3>A ' + esc(state.season) + '-es versenynaptár hamarosan</h3>' +
-        '<p>A fordulók időpontjait a nevezések lezárása után töltjük fel. A 2025/26-os archív naptár a fejléc lévő kapcsolóval érhető el.</p>' +
+        '<h3>A ' + esc(state.season) + '-os tanév naptára hamarosan</h3>' +
+        '<p>A tanév rendjének feltöltése folyamatban. A 2025/26-os archívum a fejléc kapcsolójával érhető el.</p>' +
         '<button class="btn-outline" id="calBack">Megnézem a tavalyi naptárat</button>' +
       '</div>';
     const back = $('#calBack');
     if (back) back.addEventListener('click', () => setSeason('2025/26'));
     if (timeline) timeline.style.display = 'none';
+    if (calNote) calNote.textContent = 'A tanév naptára hamarosan elérhető';
     return;
   }
 
-  if (timeline) timeline.style.display = '';
+  if (timeline) timeline.style.display = hasData ? '' : 'none';
+  if (calNote) calNote.textContent = hasData
+    ? 'A színezett napok: ünnep, szünet, első/utolsó tanítási nap — kattints a részletekért'
+    : 'Az iskolai ünnepek és szünetek már láthatók — a fordulók hamarosan';
 
-  const months = [];
-  keys.forEach(k => {
-    const ym = k.slice(0, 7);
-    if (!months.some(m => m.ym === ym)) months.push({ ym, y: +k.slice(0, 4), m: +k.slice(5, 7) });
+  /* szezonváltáskor alaphelyzet: mai hónap, ha a tanévben vagyunk, különben az első esemény hónapja */
+  const seasonChanged = calSeason !== state.season;
+  if (seasonChanged || calIdx < 0 || calIdx >= months.length){
+    const now = new Date();
+    const curYm = now.getFullYear() + '-' + pad(now.getMonth() + 1);
+    const inYear = months.findIndex(mo => mo.ym === curYm);
+    if (inYear >= 0){
+      calIdx = inYear;
+    } else {
+      const firstEvent = Object.keys(daysByDate).sort()[0];
+      const evIdx = firstEvent ? months.findIndex(mo => mo.ym === firstEvent.slice(0, 7)) : -1;
+      calIdx = evIdx >= 0 ? evIdx : 0;
+    }
+    calSeason = state.season;
+  }
+  calMonths = months;
+
+  const chips = months.map((mo, i) => {
+    const name = MONTHS_HU[mo.m - 1];
+    const short = name.charAt(0).toUpperCase() + name.slice(1, 3);
+    return '<button type="button" class="cal-chip" data-i="' + i + '" aria-label="' + name + ' ' + mo.y + '">' + short + '</button>';
+  }).join('');
+
+  host.innerHTML =
+    '<div class="cal-single">' +
+      '<div class="cal-pager">' +
+        '<button type="button" class="cal-nav" id="calPrev" aria-label="Előző hónap">‹</button>' +
+        '<div class="cal-ptitle">' +
+          '<span class="cal-year" id="calYearLabel"></span>' +
+          '<h3 id="calMonthTitle"></h3>' +
+        '</div>' +
+        '<button type="button" class="cal-nav" id="calNext" aria-label="Következő hónap">›</button>' +
+      '</div>' +
+      '<div class="cal-chips" id="calChips" role="tablist" aria-label="Tanév hónapjai">' + chips + '</div>' +
+      '<div class="cal-card shine">' +
+        '<div class="cal-grid" id="calGrid"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="cal-legend">' +
+      '<span><i style="background:linear-gradient(135deg,#ffb703,#fb8500)"></i> Nevezési határidő</span>' +
+      '<span><i style="background:linear-gradient(135deg,#4f7cff,#8b5cf6)"></i> Mérkőzésnap</span>' +
+      '<span><i style="background:linear-gradient(135deg,#22d3ee,#8b5cf6)"></i> Döntő</span>' +
+      '<span><i style="background:linear-gradient(135deg,#f43f5e,#fb7185)"></i> Ünnepnap</span>' +
+      '<span><i style="background:linear-gradient(135deg,#8b5cf6,#64748b)"></i> Szünet</span>' +
+      '<span><i style="background:linear-gradient(135deg,#34d399,#22d3ee)"></i> Első / utolsó tanítási nap</span>' +
+      '<span><i style="background:rgba(109,127,157,.5)"></i> Nincs program</span>' +
+    '</div>' +
+    '<div class="cal-detail" id="calDetail"><div class="cd-sub">Nap részletei</div>' +
+    '<p class="cd-empty">Válassz egy napot a naptárban — itt megjelenik, mi történik az adott napon.</p></div>';
+
+  const prev = $('#calPrev'), next = $('#calNext');
+  if (prev) prev.addEventListener('click', () => gotoMonth(calIdx - 1));
+  if (next) next.addEventListener('click', () => gotoMonth(calIdx + 1));
+  $('#calChips')?.addEventListener('click', e => {
+    const chip = e.target.closest('.cal-chip');
+    if (chip) gotoMonth(+chip.dataset.i);
   });
 
-  host.innerHTML = '<div class="calendar-wrap">' + months.map((mo, i) =>
-    '<div class="cal-card shine">' +
-      '<div class="cal-head"><h3>' + mo.y + '. ' + MONTHS_HU[mo.m - 1].charAt(0).toUpperCase() + MONTHS_HU[mo.m - 1].slice(1) + '</h3>' +
-      '<span>' + (i === 0 ? 'Fordulók' : 'Folytatás') + '</span></div>' +
-      '<div class="cal-grid" id="calM' + i + '"></div>' +
-    '</div>'
-  ).join('') + '</div>' +
-  '<div class="cal-legend">' +
-    '<span><i style="background:linear-gradient(135deg,#ffb703,#fb8500)"></i> Nevezési határidő</span>' +
-    '<span><i style="background:linear-gradient(135deg,#4f7cff,#8b5cf6)"></i> Mérkőzésnap</span>' +
-    '<span><i style="background:linear-gradient(135deg,#22d3ee,#8b5cf6)"></i> Döntő</span>' +
-    '<span><i style="background:rgba(109,127,157,.5)"></i> Nincs program</span>' +
-  '</div>' +
-  '<div class="cal-detail" id="calDetail"><div class="cd-sub">Nap részletei</div>' +
-  '<p class="cd-empty">Válassz egy kiemelt napot a naptárban — itt megjelenik az adott nap mérkőzése és a fontos infók.</p></div>';
+  renderCalMonth();
+}
 
-  months.forEach((mo, i) => buildMonth('calM' + i, mo.y, mo.m));
+function gotoMonth(i){
+  if (!calMonths.length) return;
+  calIdx = Math.max(0, Math.min(calMonths.length - 1, i));
+  renderCalMonth();
+}
 
-  const cell = (selectedKey && document.querySelector('.cal-day[data-date="' + selectedKey + '"]')) ||
-               document.querySelector('.cal-day.has');
+function renderCalMonth(){
+  const mo = calMonths[calIdx];
+  if (!mo) return;
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+
+  const yl = $('#calYearLabel');
+  if (yl) yl.textContent = (calIdx + 1) + ' / ' + calMonths.length + ' · ' + schoolYearLabel();
+  const title = $('#calMonthTitle');
+  if (title) title.textContent = MONTHS_HU[mo.m - 1] + ' ' + mo.y;
+
+  const chips = $$('.cal-chip');
+  chips.forEach((c, i) => {
+    const on = i === calIdx;
+    c.classList.toggle('active', on);
+    c.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  const active = chips[calIdx];
+  const chipBox = $('#calChips');
+  if (active && chipBox){
+    /* az aktív chip középre igazítása vízszintes görgetéssel (a bal alsó/szélső értékekre korlátozva) */
+    chipBox.scrollLeft = active.offsetLeft - (chipBox.clientWidth - active.offsetWidth) / 2;
+  }
+
+  buildMonth('calGrid', mo.y, mo.m);
+
+  /* kijelölés: ha a korábbi nap ebben a hónapban van, maradjon, különben az első kiemelt nap */
+  let cell = selectedKey ? grid.querySelector('.cal-day[data-date="' + selectedKey + '"]') : null;
+  if (!cell) cell = grid.querySelector('.cal-day.has');
   if (cell) selectDay(cell.getAttribute('data-date'), cell);
+  else {
+    selectedKey = null;
+    const box = $('#calDetail');
+    if (box) box.innerHTML = '<div class="cd-sub">' + MONTHS_HU[mo.m - 1] + ' ' + mo.y + ' · Nincs kiemelt nap</div>' +
+      '<p class="cd-empty">Ebben a hónapban nincs ünnep, szünet vagy versenynap.</p>';
+  }
+}
+
+function schoolYearLabel(){
+  const sy = schoolYear();
+  if (!sy) return state.season;
+  return sy.label || state.season;
 }
 
 /* ---------- season specific copy ---------- */
