@@ -50,7 +50,9 @@ const SCHOOL_YEARS = {
     first: '2026-09-01',            /* első tanítási nap */
     last: '2027-06-15',             /* utolsó tanítási nap — technikum: minden évben június 15. */
     breaks: [
+      { name: 'Diáknap',        from: '2026-09-16', to: '2026-09-16' },
       { name: 'Őszi szünet',    from: '2026-10-23', to: '2026-11-01' },
+      { name: 'Mentornap',      from: '2026-11-13', to: '2026-11-13' },
       { name: 'Téli szünet',    from: '2026-12-19', to: '2027-01-03' },
       { name: 'Tavaszi szünet', from: '2027-03-25', to: '2027-04-04' },
       { name: 'Nyári szünet',   from: '2027-06-16', to: '2027-08-31' }
@@ -73,3 +75,17 @@ const SCHOOL_YEARS = {
     ]
   }
 };
+
+/* =========================================================
+   HÍREK — a kezdőlap legelső blokkja (hír-karusszel)
+   Később egy admin / Google Sheets felület szerkesztheti.
+   ========================================================= */
+const NEWS = [
+  { season: '2026/27', date: '2026-11-02', tag: 'Frissítés', title: 'Naptár frissítve: ünnepek, szünetek, tanítási napok', link: '#naptar' },
+  { season: '2026/27', date: '2026-10-23', tag: 'Hír', title: 'Őszi szünet október 23. – november 1. — nincs tanítás', link: '#naptar' },
+  { season: '2026/27', date: '2026-09-01', tag: 'Szezon', title: 'Elindult a 2026/27-es tanév — nyílik a nevezés', link: '#jelentkezes' },
+  { season: '2025/26', date: '2026-06-15', tag: 'Lezárás', title: 'Véget ért a 2025/26-os tanév — köszönjük a 11 csapatot!', link: '#tabella' },
+  { season: '2025/26', date: '2026-04-13', tag: 'Döntő', title: 'Nagydöntő április 13-án — a szezon záró mérkőzése', link: '#merkozesek' },
+  { season: '2025/26', date: '2026-03-31', tag: 'Forduló', title: 'Elkezdődött a selejtező: két napon át zajlottak a meccsek', link: '#merkozesek' },
+  { season: '2025/26', date: '2026-03-29', tag: 'Határidő', title: 'Lezárult a nevezés — 11 csapat jelezte a részvételét', link: '#jelentkezes' }
+];

@@ -629,7 +629,295 @@ function renderAll(){
   renderSchedule();
   renderStandings();
   renderCalendar();
+  renderMatchStrip();
+  renderNews();
+  renderCountdown();
   updateUserPanel();
+  syncChromeHeights();     /* sáv/menü magasság → --strip-h, --nav-h */
+}
+
+/* ---------- a kezdőlap teteje: eseménysáv + hír-karusszel (SEGÉDFÜGGVÉNYEK) ---------- */
+const MONTHS_HU_SHORT = ['jan.', 'febr.', 'márc.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.', 'nov.', 'dec.'];
+function fmtDateHu(key){
+  const m = String(key || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return key || '';
+  return m[1] + '. ' + MONTHS_HU_SHORT[+m[2] - 1] + ' ' + (+m[3]) + '.';
+}
+function reducedMotion(){
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e){ return false; }
+}
+
+/* ---------- 1) következő mérkőzés / esemény sáv (a lap legtetején, teljes szélesség) ---------- */
+function stripCandidates(){
+  const out = [];
+  /* kiírt mérkőzések (elsőbbség: szezon menetrendje) */
+  season().schedule.forEach(function(m){
+    const k = dateKey(m.date);
+    if (!k) return;
+    const time = (m.time && /^\d{1,2}:\d{2}$/.test(m.time)) ? m.time + ':00' : '00:00:00';
+    const t = new Date(k + 'T' + time).getTime();
+    if (isNaN(t)) return;
+    out.push({
+      at: t, kind: 'match', chip: 'Mérkőzés',
+      title: (m.team1 && m.team2) ? m.team1 + ' vs ' + m.team2 : (m.stage || 'Mérkőzés'),
+      when: fmtDateHu(k) + (m.time ? ' · ' + m.time : ''),
+      meta: [m.stage, m.location || '304-es terem'].filter(Boolean).join(' · '),
+      href: '#merkozesek', cta: 'Részletek'
+    });
+  });
+  /* kulcsfontosságú dátumok (nevezés, selejtező, döntő) */
+  Object.keys(KEY_DATES).forEach(function(k){
+    const t = new Date(k + 'T00:00:00').getTime();
+    if (isNaN(t)) return;
+    const kd = KEY_DATES[k] || {};
+    const chip = kd.type === 'deadline' ? 'Határidő' : (kd.type === 'final' ? 'Döntő' : 'Mérkőzés');
+    out.push({
+      at: t, kind: 'key', chip: chip, title: kd.title || 'Esemény',
+      when: fmtDateHu(k),
+      meta: kd.desc ? String(kd.desc).split('.')[0] : '',
+      href: kd.type === 'deadline' ? '#jelentkezes' : '#merkozesek', cta: 'Részletek'
+    });
+  });
+  /* tanévi események (első/utolsó tanítási nap, szünetek) */
+  const sy = SCHOOL_YEARS[state.season];
+  if (sy){
+    if (sy.first) out.push({ at: new Date(sy.first + 'T00:00:00').getTime(), kind: 'school', chip: 'Tanév',
+      title: 'Első tanítási nap', when: fmtDateHu(sy.first), meta: 'tanévkezdés', href: '#naptar', cta: 'Naptár' });
+    if (sy.last) out.push({ at: new Date(sy.last + 'T00:00:00').getTime(), kind: 'school', chip: 'Tanév',
+      title: 'Utolsó tanítási nap', when: fmtDateHu(sy.last), meta: 'tanévzárás', href: '#naptar', cta: 'Naptár' });
+    (sy.breaks || []).forEach(function(b){
+      if (!b.from) return;
+      out.push({
+        at: new Date(b.from + 'T00:00:00').getTime(), kind: 'school', chip: 'Szünet', title: b.name,
+        when: (b.to && b.to !== b.from) ? fmtDateHu(b.from) + ' – ' + fmtDateHu(b.to) : fmtDateHu(b.from),
+        meta: 'iskolai szünet', href: '#naptar', cta: 'Naptár'
+      });
+    });
+  }
+  return out.filter(c => !isNaN(c.at)).sort((a, b) => a.at - b.at);
+}
+
+/* ---------- fejléc-magasságok szinkronja (sáv + menü-sor → CSS változók) ---------- */
+function syncChromeHeights(){
+  const root = document.documentElement;
+  const strip = document.querySelector('.match-strip');
+  const navBox = document.querySelector('.site-header .container');
+  /* pontos (tört) magasság: így a sáv pontosan a saját magasságával csúszik ki —
+     kerekítés esetén vagy szubpixel sáv maradna, vagy a menüsor csúszna feljebb */
+  root.style.setProperty('--strip-h', (strip ? strip.getBoundingClientRect().height.toFixed(2) : 0) + 'px');
+  root.style.setProperty('--nav-h', (navBox ? Math.round(navBox.getBoundingClientRect().height) : 73) + 'px');
+}
+function watchChromeHeights(){
+  syncChromeHeights();
+  /* A sáv magassága szélesség- és betűtípus-függő. A ResizeObserver beágyazott/
+     átméretezett nézetben nem mindig jelez, ezért explicit is szinkronizálunk —
+     különben a fejléc a régi --strip-h értékkel csúszik fel, a menüsor levágódik. */
+  window.addEventListener('resize', syncChromeHeights);
+  window.addEventListener('orientationchange', syncChromeHeights);
+  window.addEventListener('load', syncChromeHeights);
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ syncChromeHeights(); }).catch(function(){});
+  }
+  try {
+    const ro = new ResizeObserver(function(){ syncChromeHeights(); });
+    const strip = document.querySelector('.match-strip');
+    const navBox = document.querySelector('.site-header .container');
+    if (strip) ro.observe(strip);
+    if (navBox) ro.observe(navBox);
+  } catch (e){}
+}
+
+function renderMatchStrip(){
+  const strip = document.querySelector('.match-strip');
+  if (!strip) return;
+  const list = stripCandidates();
+  const now = Date.now();
+  const ranks = ['match', 'key', 'school'];   /* mérkőzés a legfontosabb */
+  const byKind = arr => ranks.map(k => arr.filter(c => c.kind === k));
+
+  let item = null, past = false;
+  /* jövőbeli események: a legkorábbi, legmagasabb prioritású */
+  byKind(list.filter(c => c.at > now)).some(sub => { if (sub.length){ item = sub[0]; return true; } return false; });
+  if (!item){                                 /* nincs jövőbeli → a szezon záró eseménye */
+    const done = byKind(list.filter(c => c.at <= now));
+    for (const sub of done){ if (sub.length){ item = sub[sub.length - 1]; past = true; break; } }
+  }
+
+  const chip = $('#msChip'), cta = $('#msCta');
+  if (!item){ /* nincs kiírt esemény */
+    const live = state.season === '2026/27';
+    if (chip){ chip.textContent = live ? 'Nincs kiírt esemény' : 'Szezon lezárult'; chip.className = 'ms-chip is-none'; }
+    setText('msDate', '');
+    setText('msTitle', live
+      ? 'A 2026/27-es menetrend előkészítés alatt — a nevezések lezárása után áll össze'
+      : 'A 2025/26-os szezon eredményei a Mérkőzések és a Tabella oldalon nézhetők meg');
+    setText('msMeta', live ? 'Nevezés nyitva' : 'Archív nézet');
+    if (cta){ cta.setAttribute('href', live ? '#jelentkezes' : '#tabella'); cta.innerHTML = (live ? 'Jelentkezés' : 'Tabella') + ' <i>→</i>'; }
+    return;
+  }
+  if (chip){
+    chip.textContent = past ? 'Lezárult' : item.chip;
+    chip.className = 'ms-chip ' + (past ? 'is-past' : (item.kind === 'school' ? 'is-soft' : 'is-live'));
+  }
+  setText('msDate', item.when || '');
+  setText('msTitle', item.title || '');
+  setText('msMeta', item.meta || '');
+  if (cta){
+    cta.setAttribute('href', item.href || '#');
+    cta.innerHTML = esc(item.cta || 'Részletek') + ' <i>→</i>';
+  }
+}
+
+/* ---------- 2) hír-karusszel — hero-stílusú, fotó-helyettesítő gradiens- hátterek ---------- */
+const NH_BG = [
+  'radial-gradient(1100px 640px at 12% 18%,rgba(79,124,255,.62),transparent 62%),radial-gradient(900px 620px at 88% 78%,rgba(34,211,238,.42),transparent 60%),linear-gradient(140deg,#0d1734 0%,#05070f 72%)',
+  'radial-gradient(1000px 620px at 82% 22%,rgba(139,92,246,.55),transparent 60%),radial-gradient(860px 560px at 12% 82%,rgba(79,124,255,.45),transparent 62%),linear-gradient(150deg,#131033 0%,#05070f 74%)',
+  'radial-gradient(1000px 600px at 20% 80%,rgba(34,211,238,.4),transparent 60%),radial-gradient(940px 640px at 85% 15%,rgba(255,183,3,.3),transparent 58%),linear-gradient(145deg,#0a1a2c 0%,#05070f 72%)',
+  'radial-gradient(1050px 620px at 78% 78%,rgba(255,93,115,.34),transparent 60%),radial-gradient(900px 600px at 15% 20%,rgba(139,92,246,.45),transparent 62%),linear-gradient(140deg,#1a0f22 0%,#05070f 74%)',
+  'radial-gradient(1000px 600px at 50% 0%,rgba(79,124,255,.5),transparent 64%),radial-gradient(820px 560px at 90% 90%,rgba(34,211,238,.34),transparent 60%),linear-gradient(145deg,#081226 0%,#05070f 72%)'
+];
+
+const newsUI = { items: [], idx: 0, timer: null, paused: false };
+
+function showNews(i){
+  const n = newsUI.items.length;
+  if (!n) return;
+  newsUI.idx = ((i % n) + n) % n;
+  const it = newsUI.items[newsUI.idx];
+  const link = (it && it.link) || '#';
+  $$('#newsBgs .nh-bg').forEach((el, k) => el.classList.toggle('active', k === newsUI.idx));
+  $$('#newsDots .news-dot').forEach((el, k) => el.classList.toggle('active', k === newsUI.idx));
+  const t = $('#newsTitle');
+  if (t){ t.textContent = (it && it.title) || ''; t.setAttribute('href', link); }
+  setText('newsTag', (it && it.tag) || 'Hír');
+  setText('newsDate', it ? fmtDateHu(it.date) : '');
+  const card = $('#newsCard');
+  if (card) card.setAttribute('href', link);
+  setText('newsCardTitle', (it && it.title) || '');
+  setText('newsCardMeta', ((it && it.tag) || 'Hír') + (it ? ' · ' + fmtDateHu(it.date) : ''));
+  const thumb = $('#newsThumb');
+  if (thumb) thumb.style.background = NH_BG[newsUI.idx % NH_BG.length];
+  const head = $('.nh-head');
+  if (head && !reducedMotion()){
+    head.classList.remove('anim');
+    void head.offsetWidth;          /* reflow — az animáció újraindítása */
+    head.classList.add('anim');
+  }
+}
+function stopNewsTimer(){
+  if (newsUI.timer){ window.clearInterval(newsUI.timer); newsUI.timer = null; }
+}
+function startNewsTimer(){
+  stopNewsTimer();
+  if (reducedMotion() || newsUI.items.length < 2) return; /* csökkentett mozgás: nincs automatikus váltás */
+  newsUI.timer = window.setInterval(function(){
+    if (newsUI.paused || document.hidden) return;
+    showNews(newsUI.idx + 1);
+  }, 5000);
+}
+
+function renderNews(){
+  const hero = $('#newsHero');
+  if (!hero) return;
+  stopNewsTimer();
+  const items = (typeof NEWS !== 'undefined' ? NEWS : [])
+    .filter(n => n && n.season === state.season)
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  newsUI.items = items;
+  newsUI.idx = 0;
+  const bgs = $('#newsBgs'), dots = $('#newsDots');
+  if (!bgs || !dots) return;
+  if (!items.length){                       /* üres szezon: a blokk elbújik */
+    hero.style.display = 'none';
+    bgs.innerHTML = '';
+    dots.innerHTML = '';
+    return;
+  }
+  hero.style.display = '';
+  bgs.innerHTML = items.map((n, i) =>
+    '<span class="nh-bg' + (i === 0 ? ' active' : '') + '" style="background:' +
+    NH_BG[i % NH_BG.length] + '"></span>').join('');
+  dots.innerHTML = items.map((n, i) =>
+    '<button type="button" class="news-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" aria-label="' +
+    (i + 1) + '. hír megjelenítése"></button>').join('');
+  showNews(0);            /* aktív háttér + cím + kártya szinkronba hozása */
+  startNewsTimer();
+}
+
+function initNews(){
+  const hero = $('#newsHero');
+  if (!hero) return;
+  const prev = $('#newsPrev'), next = $('#newsNext');
+  if (prev) prev.addEventListener('click', function(){ showNews(newsUI.idx - 1); });
+  if (next) next.addEventListener('click', function(){ showNews(newsUI.idx + 1); });
+  hero.addEventListener('click', function(e){
+    const dot = e.target.closest ? e.target.closest('.news-dot') : null;
+    if (dot) showNews(+dot.getAttribute('data-i'));
+  });
+  /* hover/focus alatt megáll */
+  hero.addEventListener('mouseenter', function(){ newsUI.paused = true; });
+  hero.addEventListener('mouseleave', function(){ newsUI.paused = false; });
+  hero.addEventListener('focusin', function(){ newsUI.paused = true; });
+  hero.addEventListener('focusout', function(){ newsUI.paused = false; });
+}
+
+/* ---------- visszaszámláló a következő eseményig ---------- */
+let cdTarget = null;
+
+function nextEventInfo(){
+  const now = Date.now();
+  const cands = [];
+  Object.keys(KEY_DATES).forEach(function(k){
+    const t = new Date(k + 'T00:00:00').getTime();
+    if (!isNaN(t)) cands.push({ at: t, label: KEY_DATES[k].title });
+  });
+  season().schedule.forEach(function(m){
+    const k = dateKey(m.date);
+    if (!k) return;
+    const time = (m.time && /^\d{1,2}:\d{2}$/.test(m.time)) ? m.time + ':00' : '00:00:00';
+    const t = new Date(k + 'T' + time).getTime();
+    if (isNaN(t)) return;
+    cands.push({ at: t, label: (m.team1 && m.team2) ? m.team1 + ' vs ' + m.team2 : (m.stage || 'Mérkőzés') });
+  });
+  const sy = SCHOOL_YEARS[state.season];
+  if (sy){
+    if (sy.first) cands.push({ at: new Date(sy.first + 'T00:00:00').getTime(), label: 'Első tanítási nap' });
+    if (sy.last) cands.push({ at: new Date(sy.last + 'T00:00:00').getTime(), label: 'Utolsó tanítási nap' });
+    (sy.breaks || []).forEach(function(b){
+      if (b.from) cands.push({ at: new Date(b.from + 'T00:00:00').getTime(), label: b.name + ' kezdete' });
+    });
+  }
+  const future = cands.filter(c => c.at > now).sort((a, b) => a.at - b.at);
+  return future[0] || null;
+}
+
+function localDateKey(ts){
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+function setCountdownTarget(){
+  cdTarget = nextEventInfo();
+  const box = $('#heroCountdown');
+  if (!box) return;
+  if (!cdTarget){ box.hidden = true; return; }
+  setText('hcEvent', cdTarget.label + ' · ' + fmtDateHu(localDateKey(cdTarget.at)));
+}
+function tickCountdown(){
+  const box = $('#heroCountdown');
+  if (!box) return;
+  if (!cdTarget || cdTarget.at <= Date.now()) setCountdownTarget();   /* lejárt → a következőre lép */
+  if (!cdTarget){ box.hidden = true; return; }
+  box.hidden = false;
+  const diff = Math.max(0, cdTarget.at - Date.now());
+  const s = Math.floor(diff / 1000);
+  setText('hcD', pad(Math.floor(s / 86400)));
+  setText('hcH', pad(Math.floor(s / 3600) % 24));
+  setText('hcM', pad(Math.floor(s / 60) % 60));
+  setText('hcS', pad(s % 60));
+}
+function renderCountdown(){
+  setCountdownTarget();
+  if (cdTarget) tickCountdown();
 }
 
 /* ---------- registration (helyi, localStorage) ---------- */
@@ -768,20 +1056,20 @@ function placePillGlow(){
 
 /* ---------- SPA nézetkezelés (egyfájlos — folytonos menü-animáció) ---------- */
 const VIEWS = {
-  kezdolap:    'KERI // ESPORT — Kezdőlap',
-  szabalyok:   'KERI // ESPORT — Szabályok',
-  naptar:      'KERI // ESPORT — Versenynaptár',
-  merkozesek:  'KERI // ESPORT — Mérkőzések',
-  tabella:     'KERI // ESPORT — Tabella',
-  dijazas:     'KERI // ESPORT — Díjazás',
-  csapatok:    'KERI // ESPORT — Csapatok',
-  gyik:        'KERI // ESPORT — GYIK',
-  jelentkezes: 'KERI // ESPORT — Jelentkezés'
+  kezdolap:    'KERIGAMES — Kezdőlap',
+  szabalyok:   'KERIGAMES — Szabályok',
+  naptar:      'KERIGAMES — Versenynaptár',
+  merkozesek:  'KERIGAMES — Mérkőzések',
+  tabella:     'KERIGAMES — Tabella',
+  dijazas:     'KERIGAMES — Díjazás',
+  csapatok:    'KERIGAMES — Csapatok',
+  gyik:        'KERIGAMES — GYIK',
+  jelentkezes: 'KERIGAMES — Jelentkezés'
 };
 let currentView = null;
 let revealIO = null;
 
-const REVEAL_SEL = '.hero-left > *, .hero-right, .stats-strip .stat, .rule-card, .cal-card, .tl-item, .match-card, ' +
+const REVEAL_SEL = '.match-strip, .news-hero, .hero-left > *, .hero-right, .stats-strip .stat, .rule-card, .cal-card, .tl-item, .match-card, ' +
   '.prize-card, .roster-card, .faq-item, .apply-modern, .scoreboard-wrap, .schedule-header, .roster-header, ' +
   '.empty-state, .page-hero-in > *, .nav-card, .cta-band';
 
@@ -905,7 +1193,12 @@ function handleHash(){
 function initChrome(){
   const header = $('#siteHeader');
   if (header){
-    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 20);
+    const onScroll = () => {
+      const scrolled = window.scrollY > 20;
+      /* a sáv felcsúszása a mért magasságon múlik — állapotváltásnál frissítjük */
+      if (scrolled !== header.classList.contains('scrolled')) syncChromeHeights();
+      header.classList.toggle('scrolled', scrolled);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
@@ -1111,8 +1404,11 @@ function initChrome(){
   showView(hashView() || 'kezdolap', { silent: true });
   initChrome();
   initForm();
+  initNews();
   renderAll();
+  watchChromeHeights();
   armReveal(document);
+  window.setInterval(tickCountdown, 1000);   /* visszaszámláló 1 mp-es frissítéssel */
   if (state.userTeam){
     const btn = $('#submitBtn');
     if (btn && state.season === '2026/27') btn.textContent = 'Már regisztráltál!';
