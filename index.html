@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KERI // ESPORT — Kezdőlap</title>
+<meta name="description" content="KERI Esport Kupa — a H SZC Makói Návay Lajos Technikum házi Counter-Strike 2 tornája. 5v5, iskolai csapatok, igazi kupakupa.">
+<meta name="theme-color" content="#05070f">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="aurora"><i></i><i></i><i></i><i></i></div>
+<div class="grain"></div>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <nav id="mainNav">
+      <a href="#kezdolap" class="logo">
+        <span class="logo-text"><img class="logo-img" src="assets/img/logo.png" alt="KERI Esports"></span>
+      </a>
+      <div class="nav-pill" id="navPill">
+        <span class="pill-glow"></span>
+        <a class="pill-item active" href="#kezdolap"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Kezdőlap</a>
+        <a class="pill-item" href="#szabalyok"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Szabályok</a>
+        <a class="pill-item" href="#naptar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Naptár</a>
+        <a class="pill-item" href="#merkozesek"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 11v3M5.5 12.5h3M16 11.5h.01M18.5 13h.01"/></svg>Mérkőzések</a>
+        <a class="pill-item" href="#tabella"><svg viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"/><path d="M12 13v4M9 20h6M10 17h4"/></svg>Tabella</a>
+        <a class="pill-item" href="#dijazas"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13"/><path d="M12 8H8.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h3.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z"/></svg>Díjazás</a>
+        <a class="pill-item" href="#csapatok"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.6M17.5 14.5A6 6 0 0 1 21 20"/></svg>Csapatok</a>
+      </div>
+      <div class="nav-actions">
+        <a href="#jelentkezes" class="nav-apply">Jelentkezés</a>
+        <div class="season-wrap" id="seasonWrap">
+          <button type="button" class="season-switch" id="seasonSwitch" role="switch" aria-checked="false" aria-expanded="false" aria-controls="seasonPop" aria-label="Tanév váltó — jelenleg: 2026/27 élő">
+            <span class="sw-knob">
+              <svg class="sw-ico sw-ico-live" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              <svg class="sw-ico sw-ico-arch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 1.9"/></svg>
+            </span>
+            <span class="sw-label">2026/27 · Élő</span>
+            <span class="sw-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 14.5 12 8.5l6 6"/></svg></span>
+          </button>
+          <div class="sw-pop" id="seasonPop" role="listbox" aria-label="Szezon kiválasztása">
+            <span class="sw-hl" aria-hidden="true"></span>
+            <button type="button" class="sw-opt active" data-season="2026/27" role="option" aria-selected="true">
+              <span class="sw-opt-ico"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
+              <span class="sw-opt-txt"><b>2026/27 · Élő</b><small>Élő szezon — nevezés nyitva</small></span>
+            </button>
+            <button type="button" class="sw-opt" data-season="2025/26" role="option" aria-selected="false">
+              <span class="sw-opt-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 1.9"/></svg></span>
+              <span class="sw-opt-txt"><b>2025/26 · Archív</b><small>Lezárt szezon — megtekintés</small></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="archive-ribbon" id="archiveRibbon">
+    <span>◆ Archív nézet — a 2025/2026-os tanév lezárt adatai</span>
+    <button type="button" id="backToLive">Vissza a 2026/27-es szezonhoz</button>
+  </div>
+  <div class="sw-scrim" id="swScrim" hidden></div>
+</header>
+
+<!-- ================= LIQUID MENU (dock "Több") ================= -->
+<div class="liquid-menu" id="liquidMenu" aria-hidden="true">
+  <div class="lm-backdrop"></div>
+  <div class="lm-sheet" role="dialog" aria-modal="true" aria-label="Navigáció">
+    <div class="lm-grab"></div>
+    <div class="lm-head">
+      <a href="#kezdolap" class="logo lm-brand">
+        <img class="logo-img" src="assets/img/logo.png" alt="KERI Esports">
+        <small id="lmSeason">2026/27-es szezon</small>
+      </a>
+      <button class="lm-close" id="lmClose" aria-label="Menü bezárása">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="lm-links">
+      <a href="#kezdolap" class="active"><span>Kezdőlap</span><span class="lm-arrow">→</span></a>
+      <a href="#szabalyok"><span>Szabályok</span><span class="lm-arrow">→</span></a>
+      <a href="#naptar"><span>Versenynaptár</span><span class="lm-arrow">→</span></a>
+      <a href="#merkozesek"><span>Mérkőzések</span><span class="lm-arrow">→</span></a>
+      <a href="#tabella"><span>Tabella</span><span class="lm-arrow">→</span></a>
+      <a href="#dijazas"><span>Díjazás</span><span class="lm-arrow">→</span></a>
+      <a href="#csapatok"><span>Csapatok</span><span class="lm-arrow">→</span></a>
+      <a href="#gyik"><span>GYIK</span><span class="lm-arrow">→</span></a>
+    </div>
+    <a href="#jelentkezes" class="lm-cta">Jelentkezés a kupára →</a>
+    <div class="lm-foot">
+      <span>games@keri.mako.hu</span>
+      <span>304-es terem</span>
+    </div>
+  </div>
+</div>
+
+<main>
+<!-- ================= NÉZET: KEZDŐLAP ================= -->
+<section class="view active" data-view="kezdolap">
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge" id="heroBadge">2026/27 · KERI CS2 KUPA</div>
+        <h1>KERI<br><span class="hero-gradient">esport</span><br>Kupa</h1>
+        <p class="hero-tagline">Rakj össze egy 5 fős CS2 csapatot, képviseld az osztályod és nyerjetek kupát az iskola legjobbjai között.</p>
+        <div class="hero-meta">
+          <div class="meta-item">
+            <h4 id="metaDate1">Hamarosan</h4>
+            <p>Selejtező</p>
+          </div>
+          <div class="meta-item">
+            <h4 id="metaDate2">Hamarosan</h4>
+            <p>Nagydöntő</p>
+          </div>
+          <div class="meta-item">
+            <h4>5v5</h4>
+            <p>Forma</p>
+          </div>
+        </div>
+        <div class="cta-group">
+          <a class="btn-primary" href="#jelentkezes">Regisztráció</a>
+          <a class="btn-outline" href="#naptar">Versenynaptár</a>
+        </div>
+      </div>
+
+      <div class="hero-right shine">
+        <div class="panel-status" id="panelStatus">Előkészítés alatt</div>
+        <div class="panel-label">Következő szezon</div>
+        <p class="panel-strong" id="panelStrong">A 2026/27-es kupa nevezése hamarosan nyílik</p>
+        <p class="panel-sub" id="panelSub">Makó, Posta u. 4-6 · 304-es terem</p>
+        <div class="panel-divider"></div>
+        <div class="panel-chips">
+          <span class="panel-chip blue">#Keri-ESPort</span>
+          <span class="panel-chip">HSZC Návay</span>
+          <span class="panel-chip">CS2 · 5v5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat"><span class="stat-idx">[01]</span><strong id="statTeams">0</strong><span>Csapat</span></div>
+      <div class="stat"><span class="stat-idx">[02]</span><strong id="statPlayers">0</strong><span>Játékos</span></div>
+      <div class="stat"><span class="stat-idx">[03]</span><strong id="statWins">10</strong><span>Pont / győzelem</span></div>
+      <div class="stat"><span class="stat-idx">[04]</span><strong id="statRooms">304</strong><span>Versenyszoba</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NAVIGATION CARDS ================= -->
+<section class="container" id="oldalak">
+  <div class="schedule-header">
+    <div>
+      <h2>Minden információ külön oldalon</h2>
+    </div>
+    <span class="header-note">Válassz egy témát</span>
+  </div>
+  <div class="nav-cards">
+    <a class="nav-card shine" href="#szabalyok">
+      <span class="nc-idx">01</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div>
+      <h3>Szabályok</h3>
+      <p>Verseny forma, részvétel, pontozás és a legfontosabb tudnivalók egy helyen.</p>
+    </a>
+    <a class="nav-card shine" href="#naptar">
+      <span class="nc-idx">02</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></div>
+      <h3>Versenynaptár</h3>
+      <p>Nevezési határidők, selejtező napok és a nagydöntő dátuma interaktív naptárban.</p>
+    </a>
+    <a class="nav-card shine" href="#merkozesek">
+      <span class="nc-idx">03</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 11v3M5.5 12.5h3M16 11.5h.01M18.5 13h.01"/></svg></div>
+      <h3>Mérkőzések</h3>
+      <p>Forduló időpontok, ellenfelek és helyszínek — ki játszik mikor.</p>
+    </a>
+    <a class="nav-card shine" href="#tabella">
+      <span class="nc-idx">04</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"/><path d="M12 13v4M9 20h6M10 17h4"/></svg></div>
+      <h3>Tabella</h3>
+      <p>A kupa állása: győzelmek, vereségek és pontok csapatonként.</p>
+    </a>
+    <a class="nav-card shine" href="#dijazas">
+      <span class="nc-idx">05</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13"/><path d="M12 8H8.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h3.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z"/></svg></div>
+      <h3>Díjazás</h3>
+      <p>Serleg, érem, oklevél és különdíj — mi vár a dobogósokra.</p>
+    </a>
+    <a class="nav-card shine" href="#csapatok">
+      <span class="nc-idx">06</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.6M17.5 14.5A6 6 0 0 1 21 20"/></svg></div>
+      <h3>Csapatok</h3>
+      <p>A nevezett formációk teljes felállása: játékosok, kapitányok, tanárok.</p>
+    </a>
+    <a class="nav-card shine" href="#gyik">
+      <span class="nc-idx">07</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.9.7c0 1.7-2.4 2.3-2.4 3.8M12 17.5h.01"/></svg></div>
+      <h3>GYIK</h3>
+      <p>Gyakori kérdésed van? Itt a legtöbbre választ kapsz azonnal.</p>
+    </a>
+    <a class="nav-card shine" href="#jelentkezes">
+      <span class="nc-idx">08</span>
+      <div class="nc-arrow">→</div>
+      <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+      <h3>Jelentkezés</h3>
+      <p>Regisztráld a csapatod 5 fővel — a mentés ezen az eszközön történik.</p>
+    </a>
+  </div>
+</section>
+
+<!-- ================= CTA BAND ================= -->
+<section class="container" id="cta">
+  <div class="cta-band shine">
+    <h2>Készen álltok a kupára?</h2>
+    <p>Gyűjtsétek össze az osztály legjobb öt játékosát, és nevezzetek még ma. A nevezés ingyenes, a dicsőség viszont örökké megmarad.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Jelentkezés most</a>
+      <a class="btn-outline" href="#szabalyok">Előbb a szabályok</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: SZABÁLYOK ================= -->
+<section class="view" data-view="szabalyok">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Szabályok</span></div>
+    <h1>A kupa szabályai</h1>
+    <p>Versenyforma, részvétel, pontozás — minden, amit a rajt előtt tudnod kell a 304-es teremben.</p>
+  </div>
+</section>
+
+<section class="container" id="rules">
+  <div class="schedule-header">
+    <div>
+      <h2>Hogy zajlik a kupa?</h2>
+    </div>
+    <span class="header-note">Forma · Szabályok · Díjak</span>
+  </div>
+  <div class="rules-grid">
+    <article class="rule-card shine">
+      <div class="rule-icon">🏆</div>
+      <h3>Verseny formája</h3>
+      <p>Egyszerre két csapat van fent a 304-es teremben, saját periféria (billentyűzet, egér) használata engedélyezett. A tanár a diákok ellenőrzése után elindítja a mérkőzést, a nyertes csapat 10 ponttal gazdagodik. A verseny végén a legtöbb ponttal rendelkező csapat játszik más iskolák ellen a fődíjért.</p>
+    </article>
+    <article class="rule-card shine">
+      <div class="rule-icon">📋</div>
+      <h3>Szabályok &amp; részvétel</h3>
+      <p>Minden játékost regisztrálni kell, mivel a verseny iskolaidőben zajlik — így a tanárok felé jelezni tudjuk a részvételt. Ha egy játékos nem tud eljönni, csere alkalmazható; ha a csapat egyáltalán nem tud játszani, 10 pont levonás jár érte.</p>
+    </article>
+    <article class="rule-card shine">
+      <div class="rule-icon">🎁</div>
+      <h3>Büszkeség &amp; díjazás</h3>
+      <p>A döntős csapatok más iskolák ellen képviselhetik a Kerit. Serleg, érem és oklevél vár a dobogósokra, a további jutalmakat a vezetőséggel való egyeztetés után hirdetjük meg.</p>
+    </article>
+  </div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Készen álltok a szabályokkal?</h2>
+    <p>Ha minden világos, nincs más hátra, mint összeállítani a csapatot és leadni a nevezést.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés most</a>
+      <a class="btn-outline" href="#naptar">Versenynaptár</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: NAPTÁR ================= -->
+<section class="view" data-view="naptar">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Versenynaptár</span></div>
+    <h1>Mikor mi történik?</h1>
+    <p>Nevezési határidő, selejtező napok és a nagydöntő — kattints egy kiemelt napra a részletekért.</p>
+  </div>
+</section>
+
+<section class="container" id="calendar">
+  <div class="schedule-header">
+    <span class="header-note" id="calNote">Kattints egy napra a részletekért</span>
+  </div>
+
+  <div id="calendarHost">
+    <div class="calendar-wrap">
+      <div class="cal-card shine">
+        <div class="cal-head"><h3>2026. Március</h3><span>Selejtező</span></div>
+        <div class="cal-grid" id="cal-2026-03"></div>
+      </div>
+      <div class="cal-card shine">
+        <div class="cal-head"><h3>2026. Április</h3><span>Döntők</span></div>
+        <div class="cal-grid" id="cal-2026-04"></div>
+      </div>
+    </div>
+
+    <div class="cal-legend">
+      <span><i style="background:linear-gradient(135deg,#ffb703,#fb8500)"></i> Nevezési határidő</span>
+      <span><i style="background:linear-gradient(135deg,#4f7cff,#8b5cf6)"></i> Mérkőzésnap</span>
+      <span><i style="background:linear-gradient(135deg,#22d3ee,#8b5cf6)"></i> Döntő</span>
+      <span><i style="background:rgba(109,127,157,.5)"></i> Nincs program</span>
+    </div>
+
+    <div class="cal-detail" id="calDetail">
+      <div class="cd-sub">Nap részletei</div>
+      <p class="cd-empty">Válassz egy kiemelt napot a naptárban — itt megjelenik az adott nap mérkőzése és a fontos infók.</p>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline">
+    <div class="tl-item">
+      <div class="tl-date">Március 29.</div>
+      <h4>Nevezési határidő</h4>
+      <p>Utolsó nap a csapatregisztrációra a <a href="#jelentkezes">jelentkezési űrlapon</a>.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Március 31.</div>
+      <h4>Selejtező · 1. nap</h4>
+      <p>8:00 eligazítás az első emeleti aulában, meccsek a 304-es teremben.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Április 1.</div>
+      <h4>Selejtező · 2. nap</h4>
+      <p>Középdöntők, majd az iskolai döntő 14:00-kor.</p>
+    </div>
+    <div class="tl-item final">
+      <div class="tl-date">Április 13.</div>
+      <h4>Nagydöntő</h4>
+      <p>A legjobb csapat képviseli a Kerit más iskolák ellen a fődíjért.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Válassz dátumot, és gyere</h2>
+    <p>A határidők és a fordulók egy helyen — a nevezés a Jelentkezés oldalon indítható.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="#merkozesek">Mérkőzések</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: MÉRKŐZÉSEK ================= -->
+<section class="view" data-view="merkozesek">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Mérkőzések</span></div>
+    <h1>Forduló időpontok</h1>
+    <p>Ki játszik mikor, kikkel és hol — a fordulók beosztása egy helyen, frissítve.</p>
+  </div>
+</section>
+
+<section class="container" id="schedule">
+  <div class="schedule-header">
+    <span class="header-note">Ki játszik mikor</span>
+  </div>
+  <div id="schedule-container"></div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Kiálltok a rajtra?</h2>
+    <p>Kövesd a fordulókat, és készüljetek a következő meccsre — a jelentkezés nyitva.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="#tabella">Tabella</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: TABELLA ================= -->
+<section class="view" data-view="tabella">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Tabella</span></div>
+    <h1>A kupa állása</h1>
+    <p>Győzelem, vereség, pont — a ranglista éléről lefelé, csapatonként.</p>
+  </div>
+</section>
+
+<section class="container" id="standings">
+  <div class="schedule-header">
+    <span class="header-note">Győzelem = 10 pont</span>
+  </div>
+  <div class="scoreboard-wrap">
+    <div class="scoreboard-table" id="matches-container">
+      <div class="scoreboard-row scoreboard-header">
+        <div>#</div>
+        <div>Csapat</div>
+        <div>GY</div>
+        <div>V</div>
+        <div class="hide-sm">Lej.</div>
+        <div>Pont</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Felforgatnátok a ranglistát?</h2>
+    <p>A tabella a nevezés és az első forduló után éled — legyél te az első a listán.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="#merkozesek">Mérkőzések</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: DÍJAZÁS ================= -->
+<section class="view" data-view="dijazas">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Díjazás</span></div>
+    <h1>Miért érdemes játszani?</h1>
+    <p>Serleg, érem, oklevél és a kupa — a dobogó minden helyezettje visz valamit haza.</p>
+  </div>
+</section>
+
+<section class="container" id="prizes">
+  <div class="schedule-header">
+    <span class="header-note">A dobogó minden helyezettje visz valamit</span>
+  </div>
+  <div class="prize-grid">
+    <article class="prize-card gold shine">
+      <div class="prize-icon">🥇</div>
+      <div class="prize-rank">1. helyezett</div>
+      <h3>Kupakupa</h3>
+      <p>Arany serleg, oklevél és a jog, hogy a Kerit képviseld az iskolák közötti döntőben a fődíjért.</p>
+    </article>
+    <article class="prize-card silver shine">
+      <div class="prize-icon">🥈</div>
+      <div class="prize-rank">2. helyezett</div>
+      <h3>Ezüst érem</h3>
+      <p>Érem, oklevél és örök dicsőség az iskola ranglistáján.</p>
+    </article>
+    <article class="prize-card bronze shine">
+      <div class="prize-icon">🥉</div>
+      <div class="prize-rank">3. helyezett</div>
+      <h3>Bronz érem</h3>
+      <p>Érem és oklevél a bronzcsapatnak.</p>
+    </article>
+    <article class="prize-card special shine">
+      <div class="prize-icon">⭐</div>
+      <div class="prize-rank">Különdíj</div>
+      <h3>Torna MVP</h3>
+      <p>A verseny legjobb játékosa külön elismerést kap a szervezőktől.</p>
+    </article>
+  </div>
+  <p class="prize-note">📢 A további jutalmakat a vezetőséggel való egyeztetés után hirdetjük meg.</p>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>A serleg a tiétek lehet</h2>
+    <p>Gyűjtsétek a pontokat és vigyétek haza a kupát — a díjak már várnak.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="#szabalyok">Szabályok</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: CSAPATOK ================= -->
+<section class="view" data-view="csapatok">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Csapatok</span></div>
+    <h1>Ki milyen felállásban játszik?</h1>
+    <p>A nevezett formációk teljes felállása: játékosok, kapitányok és az osztályfőnökök.</p>
+  </div>
+</section>
+
+<section class="container" id="rosters">
+  <div class="roster-header">
+    <span class="header-note" id="rosterNote">A mezőny, ahogy eddig alakult</span>
+  </div>
+  <div id="teams-container"></div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Keressétek a csapatotokat</h2>
+    <p>Ha még nincs a listán, most jelentkezhettek — a mezőny a nevezésekkel bővül.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="#szabalyok">Szabályok</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: GYIK ================= -->
+<section class="view" data-view="gyik">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>GYIK</span></div>
+    <h1>Minden, amit tudnod kell</h1>
+    <p>Ha kérdésed van, előbb nézd meg — ha itt sincs válasz, írj a games@keri.mako.hu címre.</p>
+  </div>
+</section>
+
+<section class="container" id="faq">
+  <div class="schedule-header">
+    <span class="header-note">Ha kérdésed van: games@keri.mako.hu</span>
+  </div>
+  <div class="faq-list">
+    <details class="faq-item" open>
+      <summary><span class="faq-num">01</span> Ki jelentkezhet a kupára?</summary>
+      <div class="faq-body">Az iskola bármely osztálya nevezhet, 5 fős csapatokkal. Egy csapatnak egy kapitány kell, aki a regisztrációkor megadja az elérhetőségét.</div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="faq-num">02</span> Kell saját felszerelés?</summary>
+      <div class="faq-body">Igen, saját perifériát (billentyűzetet és egeret) hozhatsz. A gépeket és a monitort a szervezők biztosítják a 304-es teremben.</div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="faq-num">03</span> Mi történik, ha valaki nem tud eljönni?</summary>
+      <div class="faq-body">A csapat be tud cserélni egy játékost, de a csere nevét előbb jelezni kell a szervezőknek. Ha a csapat egyáltalán nem tud játszani, 10 pont levonás jár érte.</div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="faq-num">04</span> Hogyan zajlik a pontozás?</summary>
+      <div class="faq-body">Minden megnyert mérkőzés 10 pontot ér. A verseny végén a legtöbb ponttal rendelkező csapat jut a döntőbe, és képviseli az iskolát.</div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="faq-num">05</span> Mikor lesznek a döntők?</summary>
+      <div class="faq-body">Az iskolai selejtező március 31-én és április 1-én zajlik, az iskolai döntő április 1-én 14:00-kor, a nagydöntő pedig április 13-án. Részletek a <a href="#naptar">versenynaptárban</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary><span class="faq-num">06</span> Hova fordulhatok kérdéssel?</summary>
+      <div class="faq-body">Írj a <a href="mailto:games@keri.mako.hu">games@keri.mako.hu</a> címre, és a szervezők hamarosan válaszolnak.</div>
+    </details>
+  </div>
+</section>
+
+<section class="container">
+  <div class="cta-band shine">
+    <h2>Maradt még kérdésed?</h2>
+    <p>Írj a szervezőknek, vagy nézd meg a nevezési oldalt — minden infó egy kattintásra.</p>
+    <div class="cta-group">
+      <a class="btn-primary" href="#jelentkezes">Nevezés</a>
+      <a class="btn-outline" href="mailto:games@keri.mako.hu">Kapcsolat</a>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= NÉZET: JELENTKEZÉS ================= -->
+<section class="view" data-view="jelentkezes">
+<section class="page-hero">
+  <div class="container page-hero-in">
+    <div class="crumb"><a href="#kezdolap">Kezdőlap</a><span>→</span><span>Jelentkezés</span></div>
+    <h1>Nevezd a csapatod</h1>
+    <p>5 fős csapat, egy kapitány, egy űrlap — a jelentkezés ezen az eszközön tárolódik, külső szerver nélkül.</p>
+  </div>
+</section>
+
+<section class="container" id="apply">
+  <div class="apply-modern shine">
+    <div class="schedule-header">
+      <div>
+        <h2>Jelentkezési űrlap</h2>
+      </div>
+      <span class="header-note" id="applyNote">2026/27-es szezon</span>
+    </div>
+    <div class="apply-grid">
+      <div class="apply-left">
+        <h3>Regisztráld a csapatod</h3>
+        <p>Csak 5 fős csapatokat fogadunk. Add meg a pontos neved, hogy a szervezők ellenőrizhessék a létszámot.</p>
+        <div class="info-chip">
+          <p>📢 Jelentkezési határidő: <strong id="deadlineText">hamarosan</strong></p>
+          <p style="margin-top:10px" id="firstRoundText">Első forduló: március vége</p>
+        </div>
+        <div class="info-chip">
+          <p>❌ Bármiféle probléma esetén <strong>games@keri.mako.hu</strong></p>
+        </div>
+        <div class="info-chip">
+          <p>💾 A jelentkezés ebben a demó változatban a böngésződben tárolódik — nincs külső szerver.</p>
+        </div>
+        <div class="info-chip">
+          <p>📜 Még nem olvastad? Nézd meg a <a href="#szabalyok">szabályokat</a> és a <a href="#naptar">versenynaptárat</a>.</p>
+        </div>
+      </div>
+      <div class="apply-form-wrap">
+        <form id="application-form" novalidate>
+          <div class="form-group">
+            <label for="teamName">Csapat név *</label>
+            <input type="text" id="teamName" required placeholder="pl. Csipet csapat" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="captainEmail">Kapitány email *</label>
+            <input type="email" id="captainEmail" required placeholder="pelda@keri.mako.hu" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="players">5 játékos (név / becenév) *</label>
+            <textarea id="players" rows="3" required placeholder="Kis(raketa)Csaba,Nagy(Feco)Ferenc,Álmos(célzóvíz)Aurél,Jakob(öcsi)Ákos,Malaj(Hollywood)Zsolt"></textarea>
+            <p class="form-hint">Pontosan 5 fő, vesszővel elválasztva</p>
+          </div>
+          <div class="form-group">
+            <label for="teacher">Osztályfőnök</label>
+            <input type="text" id="teacher" placeholder="pl. Vidéki Gyula Milán" autocomplete="off">
+          </div>
+          <button type="submit" class="btn-submit" id="submitBtn">Jelentkezés beküldése →</button>
+        </form>
+        <div id="user-status-panel"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#kezdolap" class="logo">
+          <span class="logo-text"><img class="logo-img" src="assets/img/logo.png" alt="KERI Esports"></span>
+        </a>
+        <p>A Makói Keri esport versenyével kapcsolatos tudnivalókat találhatod meg. Jelentkezz te is, és éld át a valódi esport versenyérzért!</p>
+        <div class="footer-social">
+          <a href="mailto:games@keri.mako.hu" aria-label="E-mail">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
+          </a>
+          <a href="https://keri.mako.hu" target="_blank" rel="noopener" aria-label="Iskola honlapja">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.9 9h-3.4a15.6 15.6 0 0 0-1.2-5.6A8 8 0 0 1 19.9 11zM12 4c.9 1.2 1.9 3.6 2.2 7H9.8C10.1 7.6 11.1 5.2 12 4zM4.1 13h3.4c.1 2 .5 3.9 1.2 5.6A8 8 0 0 1 4.1 13zm3.4-2H4.1a8 8 0 0 1 4.6-5.6A15.6 15.6 0 0 0 7.5 11zm4.5 9c-.9-1.2-1.9-3.6-2.2-7h4.4c-.3 3.4-1.3 5.8-2.2 7zm3.4-1.4c.7-1.7 1.1-3.6 1.2-5.6h3.4a8 8 0 0 1-4.6 5.6z"/></svg>
+          </a>
+          <a href="#jelentkezes" aria-label="Jelentkezés">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Verseny</h4>
+          <a href="#naptar">Versenynaptár</a>
+          <a href="#merkozesek">Mérkőzések</a>
+          <a href="#tabella">Tabella</a>
+          <a href="#dijazas">Díjazás</a>
+        </div>
+        <div class="footer-col">
+          <h4>Információ</h4>
+          <a href="#szabalyok">Szabályok</a>
+          <a href="#csapatok">Csapatok</a>
+          <a href="#gyik">GYIK</a>
+          <a href="#jelentkezes">Jelentkezés</a>
+        </div>
+        <div class="footer-col">
+          <h4>Kapcsolat</h4>
+          <a href="mailto:games@keri.mako.hu">games@keri.mako.hu</a>
+          <a href="https://keri.mako.hu" target="_blank" rel="noopener">keri.mako.hu</a>
+          <span>Makó, Posta u. 4-6.</span>
+          <span>304-es terem</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="footer-bottom">
+      <span>© 2026 HSZC Makói Návay Lajos Technikum – kerigames</span>
+      <a href="#top" class="top-arrow to-top">↑ Fejléc</a>
+    </div>
+
+    <div class="footer-watermark"><img src="assets/img/logo.png" alt="Kerigames logó"></div>
+  </div>
+</footer>
+
+<!-- ================= DOCK (telefon + tablet) ================= -->
+<nav class="dock" id="dock" aria-label="Gyorsmenü">
+  <a class="dock-item active" href="#kezdolap" aria-label="Kezdőlap" title="Kezdőlap" aria-current="page">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>
+    <span>Kezdőlap</span><i class="dock-dot"></i>
+  </a>
+  <a class="dock-item" href="#naptar" aria-label="Naptár" title="Naptár">
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+    <span>Naptár</span><i class="dock-dot"></i>
+  </a>
+  <a class="dock-item" href="#merkozesek" aria-label="Mérkőzések" title="Mérkőzések">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 11v3M5.5 12.5h3M16 11.5h.01M18.5 13h.01"/></svg>
+    <span>Mérkőzés</span><i class="dock-dot"></i>
+  </a>
+  <a class="dock-item has-dot" href="#jelentkezes" aria-label="Jelentkezés" title="Jelentkezés">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+    <span>Nevezés</span><i class="dock-dot"></i>
+  </a>
+  <button class="dock-item" id="dockMore" aria-label="Több menü" title="Több" aria-expanded="false" aria-controls="liquidMenu">
+    <svg viewBox="0 0 24 24" stroke-width="2.4"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+    <span>Több</span><i class="dock-dot"></i>
+  </button>
+</nav>
+
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
