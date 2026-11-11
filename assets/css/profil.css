@@ -1,0 +1,328 @@
+/* =========================================================
+   KERIGAMES — diák profil oldal
+   A style.css tokenjeit használja, csak a profil saját elemei.
+   ========================================================= */
+
+body.pf{ padding-top:0; overflow-x:hidden }
+
+/* ---------------- fejléc ---------------- */
+.pf-top{
+  position:sticky; top:0; z-index:60;
+  background:rgba(5,7,15,.72);
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.pf-top-in{ display:flex; align-items:center; justify-content:space-between; gap:16px; height:66px }
+.pf-brand img{ height:24px; width:auto; display:block }
+.pf-nav{ display:flex; align-items:center; gap:20px }
+.pf-nav a{
+  color:var(--ink-2); text-decoration:none; font-size:.86rem; font-weight:600;
+  transition:color .25s var(--ease);
+}
+.pf-nav a:hover{ color:#fff }
+
+/* ---------------- alap ---------------- */
+.pf-main{ max-width:1120px; padding:40px 32px 80px }
+.pf-eyebrow{
+  font-family:var(--mono); font-size:.64rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cyan); display:inline-block;
+}
+
+/* ---------------- belépő ---------------- */
+.pf-gate{
+  max-width:660px; margin:4vh auto 0; padding:36px 34px 30px; border-radius:32px;
+  background:linear-gradient(160deg,rgba(24,32,52,.96),rgba(10,14,26,.96));
+  border:1px solid rgba(126,160,245,.25);
+  box-shadow:0 46px 90px -56px rgba(0,0,0,1),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.pf-gate[hidden]{ display:none }
+.pf-gate h1{
+  font-family:var(--display); font-size:clamp(1.7rem,4vw,2.15rem); line-height:1.12;
+  margin:12px 0 12px; letter-spacing:-.02em;
+}
+.pf-lead{ color:var(--ink-2); line-height:1.68; margin:0 0 24px; font-size:.97rem }
+.pf-form{ display:flex; gap:10px; flex-wrap:wrap }
+.pf-input{
+  flex:1 1 280px; min-width:0;
+  padding:14px 16px; border-radius:15px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.05);
+  color:var(--ink); font:inherit; font-size:.95rem;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+}
+.pf-input::placeholder{ color:var(--ink-3) }
+.pf-input:focus{ outline:none; border-color:rgba(120,170,255,.7); box-shadow:0 0 0 4px rgba(79,124,255,.18) }
+.pf-form .btn-primary{ flex:0 0 auto; border:0; cursor:pointer }
+.pf-hint{ color:var(--ink-3); font-size:.82rem; line-height:1.6; margin:18px 0 0 }
+.pf-hint.is-error{ color:#ff9f9f }
+
+/* ---------------- Google belépés ---------------- */
+.pf-gsi{ margin:2px 0 0 }
+.pf-gsi:empty{ display:none }
+.pf-gsi > div{ margin:0 0 4px }
+
+.pf-google{
+  display:inline-flex; align-items:center; gap:12px;
+  padding:13px 22px; border-radius:999px; cursor:pointer;
+  font:inherit; font-weight:600; font-size:.94rem; color:var(--ink);
+  border:1px solid rgba(255,255,255,.22);
+  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 30px -22px rgba(0,0,0,.9);
+  transition:background .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);
+}
+.pf-google:hover{ background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.07)); border-color:rgba(255,255,255,.34); transform:translateY(-1px) }
+.pf-google-ico{
+  display:grid; place-items:center; width:26px; height:26px; border-radius:50%;
+  font-family:var(--display); font-weight:700; font-size:.95rem; color:#fff;
+  background:linear-gradient(140deg,#4285f4,#1a73e8);
+}
+
+.pf-demo{
+  margin:20px 0 0; padding:14px 16px; border-radius:16px;
+  border:1px dashed rgba(255,255,255,.2); background:rgba(255,255,255,.03);
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.pf-switch{ display:inline-flex; align-items:center; gap:9px; font-size:.82rem; color:var(--ink-2); cursor:pointer }
+.pf-switch input{ width:16px; height:16px; accent-color:#4f7cff }
+.pf-demo .pf-ghost:disabled{ opacity:.45; cursor:not-allowed }
+
+.pf-alt{ margin:22px 0 0 }
+.pf-linkbtn{
+  background:none; border:0; padding:0; cursor:pointer;
+  color:#9fc0ff; font:inherit; font-size:.85rem; font-weight:600;
+  border-bottom:1px dashed rgba(159,192,255,.5);
+}
+.pf-linkbtn:hover{ color:#fff; border-bottom-color:rgba(255,255,255,.7) }
+.pf-form[hidden]{ display:none }
+
+/* ---------------- nincs csapat ---------------- */
+.pf-notteam{
+  max-width:660px; margin:4vh auto 0; padding:36px 34px 30px; border-radius:32px;
+  background:linear-gradient(160deg,rgba(30,26,52,.96),rgba(10,14,26,.96));
+  border:1px solid rgba(167,139,250,.28);
+  box-shadow:0 46px 90px -56px rgba(0,0,0,1),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.pf-notteam[hidden]{ display:none }
+.pf-notteam h1{
+  font-family:var(--display); font-size:clamp(1.6rem,3.6vw,2rem); line-height:1.14;
+  margin:12px 0 12px; letter-spacing:-.02em;
+}
+.pf-account{
+  font-family:var(--mono); font-size:.75rem; letter-spacing:.06em; color:#c9b8ff;
+  margin:0 0 20px; word-break:break-all;
+}
+
+/* ---------------- fiók a fejlécben ---------------- */
+.pf-user{ display:flex; align-items:center; gap:12px; flex-wrap:wrap }
+.pf-user-email{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.03em; color:var(--ink-2);
+  max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* ---------------- profil fej ---------------- */
+.pf-profile{ display:grid; gap:20px }
+.pf-profile[hidden]{ display:none }
+.pf-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:18px; flex-wrap:wrap; margin-bottom:2px;
+}
+.pf-head h1{ font-family:var(--display); font-size:clamp(1.8rem,4vw,2.4rem); margin:10px 0 8px; letter-spacing:-.02em }
+.pf-who{ color:var(--ink-2); margin:0; font-size:.95rem }
+.pf-ghost{
+  padding:10px 18px; border-radius:999px; cursor:pointer;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.05); color:var(--ink);
+  font:inherit; font-weight:600; font-size:.84rem;
+  transition:background .25s var(--ease),border-color .25s var(--ease);
+}
+.pf-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3) }
+
+/* ---------------- kártyák ---------------- */
+.pf-grid{ display:grid; grid-template-columns:1.3fr .7fr; gap:20px }
+.pf-card{
+  border-radius:26px; padding:24px 24px 22px;
+  background:linear-gradient(158deg,rgba(22,29,48,.95),rgba(12,17,30,.93));
+  border:1px solid rgba(126,160,245,.22);
+  box-shadow:0 24px 46px -34px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.pf-card h2{ font-family:var(--display); font-size:1.16rem; margin:0; letter-spacing:-.01em }
+.pf-card--next{ display:flex; flex-direction:column; gap:6px }
+.pf-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:16px }
+.pf-note{ color:var(--ink-3); font-size:.78rem }
+
+/* csapat */
+.pf-team-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px }
+.pf-tag{
+  display:inline-block; font-family:var(--mono); font-size:.6rem; letter-spacing:.16em;
+  text-transform:uppercase; color:#9fc0ff;
+  border:1px solid rgba(79,124,255,.45); background:rgba(79,124,255,.14);
+  padding:3px 8px; border-radius:7px; margin-bottom:10px;
+}
+.pf-sub{ color:var(--ink-3); font-size:.83rem; margin:8px 0 0; line-height:1.5 }
+.pf-sep{ height:1px; background:rgba(255,255,255,.08); margin:20px 0 }
+.pf-reason{
+  margin:14px 0 0; padding:11px 14px; border-radius:13px; font-size:.85rem;
+  color:#ffc9c9; background:rgba(255,90,90,.1); border:1px solid rgba(255,90,90,.28);
+}
+.pf-roster{ list-style:none; margin:16px 0 0; padding:0; display:grid; gap:2px }
+.pf-roster li{
+  display:flex; align-items:center; gap:12px;
+  padding:9px 12px; border-radius:11px; font-size:.92rem;
+  color:var(--ink-2);
+}
+.pf-roster li.is-me{ background:rgba(79,124,255,.14); color:#fff }
+.pf-roster li.is-me b{ color:#fff }
+.pf-roster b{ font-weight:600; color:var(--ink) }
+.pf-num{ font-family:var(--mono); font-size:.68rem; color:var(--ink-3); min-width:14px }
+.pf-roster em{
+  margin-left:auto; font-style:normal; font-size:.68rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--cyan);
+}
+
+/* jelvények, chipek */
+.pf-badge{
+  flex-shrink:0; font-size:.7rem; font-weight:700; letter-spacing:.06em;
+  padding:6px 12px; border-radius:999px; white-space:nowrap;
+}
+.pf-badge.ok{ color:#8ff0c4; background:rgba(34,211,150,.14); border:1px solid rgba(34,211,150,.4) }
+.pf-badge.warn{ color:#ffdd9a; background:rgba(255,190,70,.14); border:1px solid rgba(255,190,70,.4) }
+.pf-badge.bad{ color:#ffb3b3; background:rgba(255,90,90,.14); border:1px solid rgba(255,90,90,.4) }
+.pf-chips{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0 }
+.pf-chip{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.04em;
+  padding:5px 11px; border-radius:999px; color:var(--ink-2);
+  border:1px solid rgba(255,255,255,.13); background:rgba(255,255,255,.045);
+}
+.pf-chip.strong{ color:#cfe0ff; border-color:rgba(79,124,255,.55); background:rgba(79,124,255,.16) }
+
+/* következő meccs */
+.pf-next-title{ font-family:var(--display); font-size:1.5rem; margin:6px 0 4px; letter-spacing:-.01em }
+.pf-next-when{ color:var(--ink-2); font-size:.9rem; margin:0 }
+.pf-empty{ color:var(--ink-2); font-size:.92rem; line-height:1.6; margin:8px 0 0 }
+.pf-empty-sm{ color:var(--ink-3); font-size:.8rem; line-height:1.55; margin:14px 0 0 }
+
+/* meccsek */
+.pf-match{
+  display:grid; grid-template-columns:104px minmax(0,1fr) auto;
+  gap:14px; align-items:center; padding:14px 2px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.pf-match:first-child{ border-top:0 }
+.pf-when{ display:grid; gap:2px }
+.pf-when b{ font-size:.9rem; font-weight:600 }
+.pf-when span{ font-family:var(--mono); font-size:.68rem; color:var(--ink-3) }
+.pf-opp{ display:grid; gap:3px; min-width:0 }
+.pf-opp b{ font-size:.95rem; font-weight:600 }
+.pf-opp span{ font-size:.78rem; color:var(--ink-3) }
+.pf-score{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.06em;
+  color:var(--ink-3); white-space:nowrap;
+}
+.pf-score.is-done{
+  color:#fff; font-weight:700; font-size:.82rem;
+  padding:4px 10px; border-radius:9px;
+  background:rgba(79,124,255,.18); border:1px solid rgba(79,124,255,.4);
+}
+.pf-section-label{
+  display:block; margin:18px 0 4px;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+
+/* nevezések */
+.pf-reg{
+  display:grid; grid-template-columns:minmax(0,1fr) auto auto;
+  gap:12px; align-items:center; padding:14px 2px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.pf-reg:first-child{ border-top:0 }
+.pf-reg b{ font-size:.95rem; font-weight:600 }
+.pf-reg span.pf-reg-sub{ display:block; font-size:.78rem; color:var(--ink-3); margin-top:3px }
+.pf-reg-meta{ font-family:var(--mono); font-size:.7rem; color:var(--ink-3); white-space:nowrap }
+.pf-reg .pf-reason{ grid-column:1/-1; margin:2px 0 0 }
+
+/* ---------------- reszponzív ---------------- */
+@media (max-width:900px){
+  .pf-grid{ grid-template-columns:1fr }
+}
+@media (max-width:720px){
+  .pf-main{ padding:28px 18px 64px }
+  .pf-gate{ padding:28px 22px 24px; border-radius:26px }
+  .pf-nav{ gap:14px }
+  .pf-nav a{ font-size:.8rem }
+  .pf-nav a:nth-child(2){ display:none }
+  .pf-card{ padding:20px 18px 18px; border-radius:22px }
+  .pf-match{ grid-template-columns:82px minmax(0,1fr) auto; gap:10px }
+  .pf-reg{ grid-template-columns:minmax(0,1fr) auto }
+  .pf-reg-meta{ grid-column:1/-1; text-align:right }
+}
+@media (max-width:420px){
+  .pf-form .btn-primary{ flex:1 1 100% }
+  .pf-match{ grid-template-columns:minmax(0,1fr) auto }
+  .pf-when{ grid-column:1/-1; display:flex; align-items:baseline; gap:8px }
+}
+/* ---------------- statisztika, jelvények ---------------- */
+.pf-stats{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-top:6px }
+.pf-stat{
+  padding:14px 12px; border-radius:16px; text-align:center;
+  background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.1);
+}
+.pf-stat b{ display:block; font-family:var(--display); font-size:1.35rem; line-height:1.1 }
+.pf-stat span{ font-size:.7rem; color:var(--ink-3); letter-spacing:.04em }
+.pf-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px }
+.pf-badge-pill{
+  font-size:.76rem; font-weight:600; padding:6px 12px; border-radius:999px;
+  color:#dfe9ff; background:rgba(79,124,255,.16); border:1px solid rgba(79,124,255,.42);
+}
+.pf-ghost--sm{ padding:7px 13px; font-size:.76rem }
+
+/* ---------------- szavazás ---------------- */
+.pf-vote{ display:grid; gap:8px; margin-top:4px }
+.pf-vote-item{
+  display:grid; grid-template-columns:minmax(0,1fr) 90px 34px; align-items:center; gap:10px;
+  width:100%; padding:11px 14px; border-radius:14px; cursor:pointer; text-align:left;
+  font:inherit; color:var(--ink);
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+  transition:background .2s var(--ease),border-color .2s var(--ease);
+}
+.pf-vote-item:hover{ background:rgba(255,255,255,.09); border-color:rgba(140,175,255,.4) }
+.pf-vote-item.is-mine{ border-color:rgba(79,124,255,.65); background:rgba(79,124,255,.16) }
+.pf-vote-label{ font-size:.88rem; font-weight:600 }
+.pf-vote-bar{ height:6px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden }
+.pf-vote-bar i{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#4f7cff,#22d3ee) }
+.pf-vote-count{ font-family:var(--mono); font-size:.72rem; color:var(--ink-2); text-align:right }
+
+/* ---------------- hirdetések / cserekérelmek ---------------- */
+.pf-ad{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  padding:13px 0; border-top:1px solid rgba(255,255,255,.07);
+}
+.pf-ad:first-of-type{ border-top:0 }
+.pf-ad.is-mine{ background:rgba(79,124,255,.06); border-radius:14px; padding:13px 12px; margin:0 -12px }
+.pf-ad-main{ display:grid; gap:4px; min-width:0 }
+.pf-ad-main b{ font-size:.92rem }
+.pf-ad-need{ font-size:.76rem; color:#9fc0ff }
+.pf-ad-note{ margin:2px 0 0; font-size:.82rem; color:var(--ink-2); line-height:1.5 }
+.pf-ad-meta{ font-family:var(--mono); font-size:.68rem; color:var(--ink-3) }
+.pf-form--tight{ margin-top:12px }
+.pf-form--tight .btn-primary{ flex:0 0 auto; border:0; cursor:pointer }
+
+/* ---------------- visszajelzés ---------------- */
+.pf-toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
+  z-index:200; max-width:min(460px,calc(100vw - 32px));
+  padding:12px 18px; border-radius:14px; font-size:.86rem;
+  color:#0b1220; background:#cfe0ff; font-weight:600;
+  box-shadow:0 24px 50px -26px rgba(0,0,0,.95);
+}
+.pf-toast[hidden]{ display:none }
+.pf-toast.is-error{ background:#ffd0d0; color:#3a0b0b }
+
+@media (max-width:720px){
+  .pf-stats{ grid-template-columns:repeat(3,minmax(0,1fr)) }
+  .pf-vote-item{ grid-template-columns:minmax(0,1fr) 60px 28px }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important }
+}

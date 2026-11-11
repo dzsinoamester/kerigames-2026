@@ -1,0 +1,14 @@
+{
+  "name": "kerigames",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KERIGAMES — iskolai esport kupa oldal és szervezői admin, helyi Node adatkiszolgálóval",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

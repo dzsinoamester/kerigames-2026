@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KERIGAMES — Profil</title>
+<meta name="description" content="Saját csapat, nevezés és mérkőzések egy helyen — KERI Esport Kupa diák profil.">
+<meta name="theme-color" content="#05070f">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=5">
+<link rel="stylesheet" href="assets/css/profil.css?v=5">
+<link rel="icon" href="assets/img/kerilogo.png">
+</head>
+<body class="pf">
+
+<div class="aurora"><i></i><i></i><i></i><i></i></div>
+<div class="grain"></div>
+
+<header class="pf-top">
+  <div class="container pf-top-in">
+    <a class="pf-brand" href="./" aria-label="Vissza a kezdőlapra">
+      <img src="assets/img/logo.png" alt="KERI Esports">
+    </a>
+    <nav class="pf-nav" aria-label="Oldalak">
+      <a href="./">Kezdőlap</a>
+      <a href="./#merkozesek">Mérkőzések</a>
+      <a href="./#tabella">Tabella</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container pf-main">
+
+  <!-- ================= BELÉPŐ ================= -->
+  <section class="pf-gate" id="pfGate">
+    <span class="pf-eyebrow">Diák belépés</span>
+    <h1>Lépj be az iskolai fiókoddal</h1>
+    <p class="pf-lead">A profilod a Google-fiókodhoz kötött: a <b>@keri.mako.hu</b> címeddel belépve a saját csapatodat, nevezésedet és meccseidet látod — nevet nem kell beírni.</p>
+
+    <div class="pf-gsi" id="pfGsiHost"></div>
+    <button type="button" class="pf-google" id="pfGoogleFallback">
+      <span class="pf-google-ico" aria-hidden="true">G</span>
+      Belépés Google-fiókkal
+    </button>
+    <p class="pf-hint" id="pfAuthMsg" hidden></p>
+
+    <div class="pf-demo" id="pfDemoBox" hidden>
+      <label class="pf-switch" for="pfDemo">
+        <input type="checkbox" id="pfDemo" role="switch">
+        <span>Demó belépés (helyi kipróbálás)</span>
+      </label>
+      <button type="button" class="pf-ghost" id="pfDemoBtn" disabled>Belépés demó diákként</button>
+    </div>
+
+    <p class="pf-alt">
+      <button type="button" class="pf-linkbtn" id="pfManualToggle">Inkább a nevemmel keresek</button>
+    </p>
+
+    <form class="pf-form" id="pfForm" autocomplete="off" hidden>
+      <input class="pf-input" id="pfQuery" list="pfNames" required
+             placeholder="pl. Kis Alma vagy kis.alma-2021@keri.mako.hu"
+             aria-label="Iskolai e-mail vagy játékosnév">
+      <button class="btn-primary" type="submit">Profilom</button>
+    </form>
+    <p class="pf-hint" id="pfHint" hidden></p>
+
+    <datalist id="pfNames"></datalist>
+  </section>
+
+  <!-- ================= NINCS CSAPAT ================= -->
+  <section class="pf-notteam" id="pfNoTeam" hidden>
+    <span class="pf-eyebrow">Fiók</span>
+    <h1>Ehhez a fiókhoz nem találtunk csapatot</h1>
+    <p class="pf-lead">A nevezésnél a kapitány e-mail címét rögzítjük. Ha csapattag vagy, egyszer válaszd ki a nevedet — utána ez az eszköz megjegyzi.</p>
+    <p class="pf-account" id="pfNoTeamEmail"></p>
+
+    <form class="pf-form" id="pfLinkForm" autocomplete="off" hidden>
+      <select class="pf-input" id="pfLinkName" required aria-label="Játékosnév">
+        <option value="">Válaszd ki a neved…</option>
+      </select>
+      <button class="btn-primary" type="submit">Ez vagyok én</button>
+    </form>
+
+    <p class="pf-empty" id="pfNoTeamEmpty" hidden>
+      Jelenleg egyetlen csapat sincs nevezve a 2026/27-es szezonra, ezért nincs mihez kötni a profilod.
+      <a href="./#jelentkezes">Itt tudtok nevezni</a> — a jóváhagyás után a profilod magától megjelenik.
+    </p>
+
+    <p class="pf-hint" id="pfLinkHint" hidden></p>
+  </section>
+
+  <!-- ================= PROFIL ================= -->
+  <section class="pf-profile" id="pfProfile" hidden>
+    <div class="pf-head">
+      <div>
+        <span class="pf-eyebrow" id="pfEyebrow">Profil</span>
+        <h1 id="pfHello">Szia!</h1>
+        <p class="pf-who" id="pfWho"></p>
+      </div>
+      <div class="pf-user">
+        <span class="pf-user-email" id="pfWhoEmail"></span>
+        <a class="pf-ghost" id="pfIcs" href="#" download>Naptárba (.ics)</a>
+        <button class="pf-ghost" id="pfSwitch" type="button">Kilépés</button>
+      </div>
+    </div>
+
+    <div class="pf-grid">
+      <article class="pf-card" id="pfTeam"></article>
+      <article class="pf-card pf-card--next" id="pfNext"></article>
+    </div>
+
+    <article class="pf-card">
+      <div class="pf-card-head">
+        <h2>Nevezéseim</h2>
+        <span class="pf-note" id="pfRegNote"></span>
+      </div>
+      <div id="pfRegs"></div>
+    </article>
+
+    <article class="pf-card">
+      <div class="pf-card-head">
+        <h2>Meccseim</h2>
+        <span class="pf-note" id="pfMatchNote"></span>
+      </div>
+      <div id="pfMatches"></div>
+    </article>
+
+    <article class="pf-card" id="pfStats"></article>
+
+    <div class="pf-grid">
+      <article class="pf-card" id="pfVote"></article>
+      <article class="pf-card" id="pfSeek"></article>
+    </div>
+
+    <article class="pf-card" id="pfSwap" hidden></article>
+  </section>
+
+</main>
+
+<div class="pf-toast" id="pfToast" role="status" hidden></div>
+
+<script src="assets/js/auth-config.js?v=1"></script>
+<script src="assets/js/student-auth.js?v=1"></script>
+<script src="assets/js/profil.js?v=5"></script>
+</body>
+</html>

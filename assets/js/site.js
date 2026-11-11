@@ -101,9 +101,83 @@ function toast(message, isError){
 function season(){ return SEASONS[state.season]; }
 function localTeams(){
   if (state.season !== '2026/27' || !state.userTeam) return [];
+  /* a jóváhagyásra váró (vagy elutasított) csapat még nem publikus */
+  if (state.userTeam.status === 'pending' || state.userTeam.status === 'rejected') return [];
   return [Object.assign({ local: true }, state.userTeam)];
 }
 function allTeams(){ return localTeams().concat(season().teams); }
+
+/* ---------- szerver-adatok: a valódi adatforrás (Node API) ---------- */
+const SERVER = { competition: 'cs2-2026-27', loaded: false };
+const SERVER_EVENTS = [];
+
+/* a szerver hírei az adminból — a NEWS tömböt helyben cseréljük (const, de a tartalma igen) */
+function applyServerNews(list){
+  if (typeof NEWS === 'undefined' || !Array.isArray(list)) return;
+  NEWS.length = 0;
+  list.forEach(function (n) {
+    if (!n || !n.title) return;
+    NEWS.push({
+      season: n.season || '2026/27',
+      date: n.date,
+      tag: n.tag || 'Hír',
+      title: n.title,
+      link: n.link || '#',
+      image: n.image || ''
+    });
+  });
+}
+
+/* a szerver eseményei — bekerülnek a naptárba és a felső eseménysávba */
+function applyServerEvents(list){
+  if (!Array.isArray(list)) return;
+  SERVER_EVENTS.length = 0;
+  list.forEach(function (e) {
+    if (!e || !e.date || !e.title) return;
+    SERVER_EVENTS.push(e);
+    KEY_DATES[e.date] = {
+      type: e.type === 'deadline' ? 'deadline' : (e.type === 'final' ? 'final' : 'match'),
+      title: e.title,
+      desc: e.note || '',
+      time: e.time || ''
+    };
+  });
+}
+
+async function loadServerView(){
+  try {
+    const res = await fetch('/api/site', { cache: 'no-store' });
+    if (!res.ok) return;
+    const view = await res.json();
+    if (!view || !Array.isArray(view.teams)) return;
+    const seasonData = SEASONS['2026/27'];
+    if (!seasonData) return;
+    seasonData.teams = view.teams.map(function (t) {
+      return { name: t.name, players: t.players, captainEmail: t.captainEmail, teacher: t.teacher };
+    });
+    seasonData.matches = view.standings || [];
+    seasonData.schedule = view.schedule || [];
+    if (Array.isArray(view.news)) applyServerNews(view.news);
+    if (Array.isArray(view.events)) applyServerEvents(view.events);
+    if (view.competition) SERVER.competition = view.competition;
+    SERVER.loaded = true;
+    renderAll();
+  } catch (e) {
+    /* nincs adatkiszolgáló (pl. fájlból nyitva) → a beépített adat marad */
+  }
+}
+
+async function sendRegistration(payload){
+  const res = await fetch('/api/teams', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  let body = {};
+  try { body = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error(body.error || ('Hiba: ' + res.status));
+  return body;
+}
 
 /* ---------- renderers (mindenhol védett) ---------- */
 const STAT_IDS = ['statTeams', 'statPlayers', 'statWins', 'statRooms'];
@@ -417,7 +491,20 @@ function renderCalendar(){
     return;
   }
 
-  if (timeline) timeline.style.display = hasData ? '' : 'none';
+  if (timeline) timeline.style.display = (hasData || SERVER_EVENTS.length) ? '' : 'none';
+
+  /* az idővonal az adminból felvett eseményekből épül, ha van ilyen */
+  if (timeline && SERVER_EVENTS.length){
+    timeline.innerHTML = SERVER_EVENTS.slice()
+      .sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); })
+      .map(function (e) {
+        return '<div class="tl-item' + (e.type === 'final' ? ' final' : '') + '">' +
+          '<div class="tl-date">' + esc(fmtDateHu(e.date)) + (e.time ? ' · ' + esc(e.time) : '') + '</div>' +
+          '<h4>' + esc(e.title) + '</h4>' +
+          (e.note ? '<p>' + esc(e.note) + '</p>' : '') +
+        '</div>';
+      }).join('');
+  }
   if (calNote) calNote.textContent = hasData
     ? 'A színezett napok: ünnep, szünet, első/utolsó tanítási nap — kattints a részletekért'
     : 'Az iskolai ünnepek és szünetek már láthatók — a fordulók hamarosan';
@@ -568,13 +655,6 @@ function applySeasonCopy(){
   document.body.classList.toggle('is-archive', !live);
 
   setText('heroBadge', live ? '2026/27 · KERI CS2 KUPA' : '2025/26 · KERI CS2 KUPA · ARCHÍV');
-  setText('panelStatus', live ? 'Előkészítés alatt' : 'Lezárt szezon · adatok megtekintve');
-  setText('panelStrong', live
-    ? 'A 2026/27-es kupa nevezése hamarosan nyílik'
-    : 'Selejtező március 31-én, nagydöntő április 13-án');
-  setText('panelSub', live
-    ? 'Makó, Posta u. 4-6 · 304-es terem'
-    : '11 csapat · 10 mérkőzés · 11 tabella-bejegyzés');
   setText('metaDate1', live ? 'Hamarosan' : 'Márc. 31 – Ápr. 1.');
   setText('metaDate2', live ? 'Hamarosan' : 'Április 13.');
   setText('deadlineText', live ? 'hamarosan' : 'március 29.');
@@ -715,6 +795,12 @@ function watchChromeHeights(){
   window.addEventListener('resize', syncChromeHeights);
   window.addEventListener('orientationchange', syncChromeHeights);
   window.addEventListener('load', syncChromeHeights);
+  /* A betöltés pillanatában a betűtípus/tördelés még nem végleges, így a mérés
+     elavult sávmagasságot hagyhat (a fejléc rossz értékkel csúszna fel).
+     Ezért rövid késleltetéssel is újramérünk — nem várunk eseményre. */
+  [0, 120, 400, 1200].forEach(function (ms) {
+    window.setTimeout(syncChromeHeights, ms);
+  });
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(function(){ syncChromeHeights(); }).catch(function(){});
   }
@@ -777,6 +863,15 @@ const NH_BG = [
   'radial-gradient(1000px 600px at 50% 0%,rgba(79,124,255,.5),transparent 64%),radial-gradient(820px 560px at 90% 90%,rgba(34,211,238,.34),transparent 60%),linear-gradient(145deg,#081226 0%,#05070f 72%)'
 ];
 
+/* háttér: saját kép, ha van — sötét fátyollal, hogy a szöveg olvasható maradjon */
+function newsBackdrop(item, i){
+  const grad = NH_BG[i % NH_BG.length];
+  const img = item && item.image ? String(item.image).replace(/[^A-Za-z0-9_\-./]/g, '') : '';
+  if (!img) return grad;
+  return 'linear-gradient(100deg,rgba(5,7,15,.92) 0%,rgba(5,7,15,.58) 52%,rgba(5,7,15,.82) 100%),' +
+    'url(\'' + img + '\') center/cover no-repeat';
+}
+
 const newsUI = { items: [], idx: 0, timer: null, paused: false };
 
 function showNews(i){
@@ -796,7 +891,7 @@ function showNews(i){
   setText('newsCardTitle', (it && it.title) || '');
   setText('newsCardMeta', ((it && it.tag) || 'Hír') + (it ? ' · ' + fmtDateHu(it.date) : ''));
   const thumb = $('#newsThumb');
-  if (thumb) thumb.style.background = NH_BG[newsUI.idx % NH_BG.length];
+  if (thumb) thumb.style.background = newsBackdrop(it, newsUI.idx);
   const head = $('.nh-head');
   if (head && !reducedMotion()){
     head.classList.remove('anim');
@@ -836,7 +931,7 @@ function renderNews(){
   hero.style.display = '';
   bgs.innerHTML = items.map((n, i) =>
     '<span class="nh-bg' + (i === 0 ? ' active' : '') + '" style="background:' +
-    NH_BG[i % NH_BG.length] + '"></span>').join('');
+    newsBackdrop(n, i) + '"></span>').join('');
   dots.innerHTML = items.map((n, i) =>
     '<button type="button" class="news-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" aria-label="' +
     (i + 1) + '. hír megjelenítése"></button>').join('');
@@ -950,6 +1045,13 @@ function updateUserPanel(){
     panel.innerHTML =
       '<div class="user-status-panel">' +
         '<p>🎮 A TE CSAPATOD: <strong>' + esc(state.userTeam.name) + '</strong></p>' +
+        (state.userTeam.status === 'pending'
+          ? '<p style="margin:8px 0 0;font-size:.82rem;color:#ffd78a">⏳ A tanár jóváhagyására vár</p>'
+          : state.userTeam.status === 'approved'
+            ? '<p style="margin:8px 0 0;font-size:.82rem;color:#7ef2c4">✓ Jóváhagyva — a csapatod a listán van</p>'
+            : state.userTeam.status === 'rejected'
+              ? '<p style="margin:8px 0 0;font-size:.82rem;color:#ffb3bf">✕ Elutasítva — írj a szervezőknek</p>'
+              : '') +
         '<button type="button" class="edit-btn" id="editReg">Módosítás</button>' +
         '<button type="button" class="delete-btn" id="delReg">Törlés</button>' +
         '<p style="font-size:.8rem;color:var(--ink-3);margin-top:10px">📧 ' + esc(state.userTeam.captainEmail) + '</p>' +
@@ -1019,22 +1121,53 @@ function initForm(){
 
     const btn = $('#submitBtn');
     btn.disabled = true;
-    btn.textContent = 'Mentés...';
+    btn.textContent = 'Küldés...';
 
-    setTimeout(function(){
+    sendRegistration({
+      comp: SERVER.competition,
+      name: teamName,
+      captain: captainEmail,
+      players: parsePlayers(players),
+      teacher: teacher
+    }).then(function (team) {
+      state.userTeam = {
+        id: team.id,
+        name: team.name,
+        captainEmail: team.captain,
+        players: team.players,
+        teacher: team.teacher,
+        status: team.status,
+        registeredAt: team.createdAt
+      };
+      state.isEditMode = false;
+      saveLocalTeam();
+      btn.textContent = 'Már regisztráltál!';
+      renderAll();
+      loadServerView();
+      toast('✅ ' + team.name + ' nevezése elküldve — a tanár jóváhagyására vár.');
+    }).catch(function (err) {
+      const offline = /fetch|network|load failed/i.test(String(err && err.message));
+      if (!offline){
+        btn.disabled = false;
+        btn.textContent = 'Jelentkezés beküldése →';
+        toast(err.message, true);
+        return;
+      }
+      /* nincs adatkiszolgáló: mentés ezen az eszközön (a régi viselkedés) */
       state.userTeam = {
         name: teamName,
         captainEmail: captainEmail,
         players: players,
         teacher: teacher,
+        status: 'pending',
         registeredAt: new Date().toISOString()
       };
       state.isEditMode = false;
       saveLocalTeam();
       btn.textContent = 'Már regisztráltál!';
       renderAll();
-      toast('✅ ' + teamName + ' csapat rögzítve ezen az eszközön!');
-    }, 450);
+      toast('Nevezés helyben mentve — az adatkiszolgáló nem érhető el.', true);
+    });
   });
 }
 
@@ -1069,7 +1202,7 @@ const VIEWS = {
 let currentView = null;
 let revealIO = null;
 
-const REVEAL_SEL = '.match-strip, .news-hero, .hero-left > *, .hero-right, .stats-strip .stat, .rule-card, .cal-card, .tl-item, .match-card, ' +
+const REVEAL_SEL = '.match-strip, .news-hero, .hero-left > *, .stats-strip .stat, .rule-card, .cal-card, .tl-item, .match-card, ' +
   '.prize-card, .roster-card, .faq-item, .apply-modern, .scoreboard-wrap, .schedule-header, .roster-header, ' +
   '.empty-state, .page-hero-in > *, .nav-card, .cta-band';
 
@@ -1406,6 +1539,7 @@ function initChrome(){
   initForm();
   initNews();
   renderAll();
+  loadServerView();
   watchChromeHeights();
   armReveal(document);
   window.setInterval(tickCountdown, 1000);   /* visszaszámláló 1 mp-es frissítéssel */

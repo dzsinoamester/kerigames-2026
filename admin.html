@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KERIGAMES — Szervezői admin</title>
+<meta name="description" content="KERIGAMES szervezői felület — eredménybeírás, nevezések jóváhagyása, meccsek ütemezése.">
+<meta name="theme-color" content="#05070f">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=3">
+<link rel="stylesheet" href="assets/css/admin.css?v=2">
+<link rel="icon" href="assets/img/kerilogo.png">
+</head>
+<body class="adm">
+
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= BELÉPŐ KAPU (Google SSO / demó) ================= -->
+<div class="auth-gate" id="authGate" role="dialog" aria-modal="true" aria-labelledby="agTitle" hidden>
+  <div class="ag-card">
+    <img class="ag-logo" src="assets/img/logo.png" alt="KERI Esports">
+    <p class="ag-kicker">Szervezői felület</p>
+    <h1 class="ag-title" id="agTitle">Belépés tanárként</h1>
+    <p class="ag-sub">Eredményt beírni, nevezést jóváhagyni és meccset ütemezni csak iskolai fiókkal lehet.</p>
+
+    <p class="ag-domain">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
+      Csak <b>@keri.mako.hu</b> cím engedélyezett
+    </p>
+
+    <div class="ag-gsi" id="gsiHost"></div>
+
+    <button type="button" class="ag-google" id="googleFallback">
+      <svg class="ag-g" viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.2 17.7 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.1 5.4-4.6 7l7.6 5.9c4.4-4.1 6.7-10.1 6.7-17.4z"/>
+        <path fill="#FBBC05" d="M10.4 28.7A14.5 14.5 0 0 1 9.6 24c0-1.6.3-3.2.8-4.7l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"/>
+        <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.8 2.3-8.3 2.3-6.3 0-11.7-3.7-13.6-9l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/>
+      </svg>
+      Belépés Google-fiókkal
+    </button>
+
+    <p class="ag-msg" id="authMsg" role="alert" hidden></p>
+
+    <div class="ag-sep"><span>vagy</span></div>
+
+    <label class="ag-switch" for="demoToggle">
+      <input type="checkbox" id="demoToggle" role="switch" aria-describedby="agDemoNote">
+      <span class="ag-track" aria-hidden="true"><i></i></span>
+      <span class="ag-switch-txt">
+        <b>Demó mód</b>
+        <small>helyi kipróbálás Google-fiók nélkül</small>
+      </span>
+    </label>
+
+    <button type="button" class="ag-demo-btn" id="demoLogin" disabled>Belépés demó tanárként</button>
+
+    <p class="ag-note" id="agDemoNote">A demó belépés <b>nem valódi hitelesítés</b> — bárki bekapcsolhatja. Csak fejlesztéshez és helyi kipróbáláshoz.</p>
+    <p class="ag-foot">A Google-fiók domainjét a szerver is ellenőrzi majd minden írás előtt.</p>
+  </div>
+</div>
+
+<div class="adm-shell is-locked" id="admShell" aria-hidden="true">
+
+  <!-- ================= OLDALSÁV ================= -->
+  <aside class="adm-side">
+    <a class="adm-brand" href="index.html">
+      <img src="assets/img/logo.png" alt="KERI Esports">
+      <span class="adm-brand-tag">ADMIN</span>
+    </a>
+
+    <nav class="adm-tabs" id="adminTabs" aria-label="Admin szakaszok">
+      <button type="button" class="adm-tab active" data-tab="eredmeny" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"/><path d="M12 13v4M9 20h6M10 17h4"/></svg>
+        <span>Eredmény</span><b id="cntResults" hidden></b>
+      </button>
+      <button type="button" class="adm-tab" data-tab="nevezesek">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.6M17.5 14.5A6 6 0 0 1 21 20"/></svg>
+        <span>Nevezések</span><b id="cntTeams" hidden></b>
+      </button>
+      <button type="button" class="adm-tab" data-tab="utemezes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+        <span>Ütemezés</span><b id="cntScheduled" hidden></b>
+      </button>
+      <button type="button" class="adm-tab" data-tab="hirek">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9.5 11h5M9.5 15h5"/></svg>
+        <span>Hírek</span>
+      </button>
+      <button type="button" class="adm-tab" data-tab="naptar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M8.5 14h2M13.5 14h2M8.5 17.5h2"/></svg>
+        <span>Naptár</span>
+      </button>
+      <button type="button" class="adm-tab" data-tab="tabella">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v16"/></svg>
+        <span>Tabella</span>
+      </button>
+      <button type="button" class="adm-tab" data-tab="naplo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        <span>Napló</span>
+      </button>
+    </nav>
+
+    <div class="adm-side-foot">
+      <div class="adm-id">
+        <span class="adm-id-avatar" id="admIdAvatar" aria-hidden="true">T</span>
+        <span class="adm-id-txt">
+          <b id="admIdEmail">—</b>
+          <small id="admIdMode">—</small>
+        </span>
+        <button type="button" class="adm-id-out" id="admSignOut" aria-label="Kilépés" title="Kilépés">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h10"/></svg>
+        </button>
+      </div>
+      <span class="adm-mode" id="admModeNote"><i></i>Helyi adatok</span>
+      <button type="button" class="adm-btn adm-btn--ghost" id="resetDemo">Alaphelyzet visszaállítása</button>
+      <a class="adm-btn adm-btn--ghost" href="index.html">← Vissza az oldalra</a>
+    </div>
+  </aside>
+
+  <!-- ================= TARTALOM ================= -->
+  <main class="adm-main">
+    <header class="adm-top">
+      <div class="adm-top-txt">
+        <p class="adm-kicker">KERI//ESPORTS · szervezői felület</p>
+        <h1 id="admTitle">Eredménybeírás</h1>
+        <p class="adm-sub" id="admSub">Válaszd ki a mérkőzést, írd be a pontszámot, és kész.</p>
+      </div>
+      <div class="adm-who">
+        <span>Bejelentkezve</span>
+        <b id="admWhoEmail">—</b>
+        <small id="admWhoMode">—</small>
+      </div>
+    </header>
+
+    <!-- ---- EREDMÉNY ---- -->
+    <section class="adm-pane active" data-pane="eredmeny" aria-labelledby="admTitle">
+      <div class="adm-toolbar">
+        <div class="adm-seg" id="resultCompSwitch" role="tablist" aria-label="Játék kiválasztása"></div>
+        <div class="adm-toolbar-actions">
+          <label class="adm-check"><input type="checkbox" id="hideDone"> Kész meccsek elrejtése</label>
+        </div>
+      </div>
+      <div id="resultList" class="adm-list"></div>
+    </section>
+
+    <!-- ---- NEVEZÉSEK ---- -->
+    <section class="adm-pane" data-pane="nevezesek" aria-labelledby="admTitle">
+      <div class="adm-toolbar">
+        <div class="adm-seg" id="teamFilter" role="tablist" aria-label="Nevezés állapota">
+          <button type="button" class="adm-seg-item active" data-filter="pending">Jóváhagyásra vár</button>
+          <button type="button" class="adm-seg-item" data-filter="approved">Jóváhagyott</button>
+          <button type="button" class="adm-seg-item" data-filter="rejected">Elutasított</button>
+        </div>
+      </div>
+      <div id="teamList" class="adm-list"></div>
+
+      <div class="adm-card" style="margin-top:18px">
+        <h2 class="adm-card-title">Cserekérelmek</h2>
+        <p class="adm-note" id="reqNote"></p>
+        <div id="reqList" class="adm-list"></div>
+      </div>
+    </section>
+
+    <!-- ---- ÜTEMEZÉS ---- -->
+    <section class="adm-pane" data-pane="utemezes" aria-labelledby="admTitle">
+      <div class="adm-grid">
+        <div class="adm-card">
+          <h2 class="adm-card-title">Új mérkőzés beütemezése</h2>
+          <form id="scheduleForm" class="adm-form" novalidate>
+            <div class="adm-field">
+              <label for="sfComp">Játék / verseny</label>
+              <select id="sfComp" class="adm-input"></select>
+            </div>
+            <div class="adm-field-row">
+              <div class="adm-field">
+                <label for="sfRound">Forduló</label>
+                <input type="number" id="sfRound" class="adm-input" min="1" max="30" value="1" inputmode="numeric">
+              </div>
+              <div class="adm-field">
+                <label for="sfBestOf">Forma</label>
+                <select id="sfBestOf" class="adm-input">
+                  <option value="1">BO1</option>
+                  <option value="3">BO3</option>
+                  <option value="5">BO5</option>
+                </select>
+              </div>
+            </div>
+            <div class="adm-field">
+              <label for="sfTeamA">Csapat A</label>
+              <select id="sfTeamA" class="adm-input"></select>
+            </div>
+            <div class="adm-field">
+              <label for="sfTeamB">Csapat B</label>
+              <select id="sfTeamB" class="adm-input"></select>
+            </div>
+            <div class="adm-field-row">
+              <div class="adm-field">
+                <label for="sfDate">Dátum</label>
+                <input type="date" id="sfDate" class="adm-input" required>
+              </div>
+              <div class="adm-field">
+                <label for="sfTime">Kezdés</label>
+                <input type="time" id="sfTime" class="adm-input" value="14:00" required>
+              </div>
+            </div>
+            <div class="adm-field">
+              <label for="sfRoom">Helyszín</label>
+              <select id="sfRoom" class="adm-input">
+                <option>304-es terem</option>
+                <option>Emeleti aula</option>
+                <option>Online (Discord)</option>
+              </select>
+            </div>
+            <div id="schedWarn" class="adm-warn" hidden></div>
+            <button type="submit" class="adm-btn adm-btn--primary" id="sfSubmit">Mérkőzés mentése</button>
+          </form>
+        </div>
+
+        <div class="adm-card adm-card--wide">
+          <div class="adm-card-head">
+            <h2 class="adm-card-title">Beütemezett mérkőzések</h2>
+            <span class="adm-note" id="schedNote"></span>
+          </div>
+          <div id="schedList" class="adm-list adm-list--tight"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- HÍREK ---- -->
+    <section class="adm-pane" data-pane="hirek" aria-labelledby="admTitle">
+      <div class="adm-grid">
+        <div class="adm-card">
+          <h2 class="adm-card-title" id="newsFormTitle">Új hír</h2>
+          <form id="newsForm" class="adm-form" novalidate>
+            <div class="adm-field">
+              <label for="nfDate">Dátum</label>
+              <input type="date" id="nfDate" class="adm-input" required>
+            </div>
+            <div class="adm-field">
+              <label for="nfTag">Címke</label>
+              <select id="nfTag" class="adm-input">
+                <option>Hír</option>
+                <option>Frissítés</option>
+                <option>Szezon</option>
+                <option>Határidő</option>
+                <option>Forduló</option>
+                <option>Döntő</option>
+                <option>Lezárás</option>
+              </select>
+            </div>
+            <div class="adm-field">
+              <label for="nfTitle">Cím</label>
+              <input type="text" id="nfTitle" class="adm-input" maxlength="140" required placeholder="pl. Naptár frissítve">
+            </div>
+            <div class="adm-field">
+              <label for="nfLink">Hivatkozás</label>
+              <input type="text" id="nfLink" class="adm-input" maxlength="120" placeholder="#naptar vagy https://…">
+            </div>
+            <div class="adm-field">
+              <label for="nfImage">Kép a karusszelhez</label>
+              <input type="file" id="nfImage" class="adm-input adm-file" accept="image/png,image/jpeg,image/webp">
+              <div class="adm-imgrow" id="newsImgRow" hidden>
+                <img class="adm-thumb-lg" id="newsImgPreview" alt="">
+                <button type="button" class="adm-btn adm-btn--ghost adm-btn--sm" id="nfImageClear">Kép törlése</button>
+                <span class="adm-note" id="newsImgNote"></span>
+              </div>
+            </div>
+            <div class="adm-field">
+              <label for="nfSeason">Szezon</label>
+              <select id="nfSeason" class="adm-input">
+                <option value="2026/27">2026/27</option>
+                <option value="2025/26">2025/26 (archív)</option>
+              </select>
+            </div>
+            <div class="adm-actions">
+              <button type="submit" class="adm-btn adm-btn--primary" id="nfSubmit">Hír hozzáadása</button>
+              <button type="button" class="adm-btn adm-btn--ghost" id="nfCancel" hidden>Mégse</button>
+            </div>
+          </form>
+        </div>
+        <div class="adm-card adm-card--wide">
+          <div class="adm-card-head">
+            <h2 class="adm-card-title">Hírek</h2>
+            <span class="adm-note" id="newsNote"></span>
+          </div>
+          <div id="newsList" class="adm-list adm-list--tight"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- NAPTÁR ---- -->
+    <section class="adm-pane" data-pane="naptar" aria-labelledby="admTitle">
+      <div class="adm-grid">
+        <div class="adm-card">
+          <h2 class="adm-card-title" id="eventFormTitle">Új esemény</h2>
+          <form id="eventForm" class="adm-form" novalidate>
+            <div class="adm-field">
+              <label for="efDate">Dátum</label>
+              <input type="date" id="efDate" class="adm-input" required>
+            </div>
+            <div class="adm-field-row">
+              <div class="adm-field">
+                <label for="efTime">Kezdés (nem kötelező)</label>
+                <input type="time" id="efTime" class="adm-input">
+              </div>
+              <div class="adm-field">
+                <label for="efType">Típus</label>
+                <select id="efType" class="adm-input">
+                  <option value="deadline">Nevezési határidő</option>
+                  <option value="match">Mérkőzésnap</option>
+                  <option value="final">Döntő</option>
+                  <option value="custom">Egyéb esemény</option>
+                </select>
+              </div>
+            </div>
+            <div class="adm-field-row">
+              <div class="adm-field">
+                <label for="efComp">Játék</label>
+                <select id="efComp" class="adm-input"></select>
+              </div>
+              <div class="adm-field">
+                <label for="efRound">Forduló</label>
+                <input type="number" id="efRound" class="adm-input" min="1" max="30" value="1" inputmode="numeric">
+              </div>
+            </div>
+            <div class="adm-field">
+              <label for="efTitle">Megnevezés</label>
+              <input type="text" id="efTitle" class="adm-input" maxlength="120" required placeholder="pl. 2. forduló">
+            </div>
+            <div class="adm-field">
+              <label for="efNote">Leírás</label>
+              <input type="text" id="efNote" class="adm-input" maxlength="300" placeholder="pl. Meccsek a 304-es teremben 14:00-tól">
+            </div>
+            <div id="eventWarn" class="adm-warn" hidden></div>
+            <div class="adm-actions">
+              <button type="submit" class="adm-btn adm-btn--primary" id="efSubmit">Esemény hozzáadása</button>
+              <button type="button" class="adm-btn adm-btn--ghost" id="efCancel" hidden>Mégse</button>
+            </div>
+          </form>
+        </div>
+        <div class="adm-card adm-card--wide">
+          <div class="adm-card-head">
+            <h2 class="adm-card-title">Naptár eseményei</h2>
+            <span class="adm-note" id="eventNote"></span>
+          </div>
+          <div id="eventList" class="adm-list adm-list--tight"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- TABELLA ---- -->
+    <section class="adm-pane" data-pane="tabella" aria-labelledby="admTitle">
+      <div class="adm-toolbar">
+        <div class="adm-seg" id="tableCompSwitch" role="tablist" aria-label="Játék kiválasztása"></div>
+        <span class="adm-note">A pont a lejátszott meccsekből számolódik — itt korrekciót adhatsz hozzá.</span>
+      </div>
+      <div class="adm-card">
+        <div id="tableAdmin" class="adm-list adm-list--tight"></div>
+      </div>
+    </section>
+
+    <!-- ---- NAPLÓ ---- -->
+    <section class="adm-pane" data-pane="naplo" aria-labelledby="admTitle">
+      <div class="adm-toolbar">
+        <span class="adm-note">Minden adminisztrátori művelet naplózva — ki, mit, mikor.</span>
+      </div>
+      <div id="logList" class="adm-list adm-list--tight"></div>
+    </section>
+  </main>
+</div>
+
+<div class="adm-modal" id="admModal" hidden role="dialog" aria-modal="true" aria-labelledby="admModalTitle">
+  <div class="adm-modal__backdrop" data-modal-close></div>
+  <div class="adm-modal__card">
+    <span class="adm-modal__eyebrow">Megerősítés</span>
+    <h3 class="adm-modal__title" id="admModalTitle">Elutasítás indoka</h3>
+    <p class="adm-modal__text" id="admModalText"></p>
+    <label class="adm-modal__label" for="admModalInput">Indok</label>
+    <input class="adm-input" id="admModalInput" type="text" autocomplete="off">
+    <div class="adm-modal__actions">
+      <button type="button" class="adm-btn adm-btn--ghost" data-modal-close>Mégse</button>
+      <button type="button" class="adm-btn adm-btn--danger" id="admModalOk">Elutasítás</button>
+    </div>
+  </div>
+</div>
+
+<div id="admToasts" aria-live="polite" aria-atomic="false"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/auth-config.js?v=1"></script>
+<script src="assets/js/admin-auth.js?v=3"></script>
+<script src="assets/js/admin.js?v=18963"></script>
+</body>
+</html>

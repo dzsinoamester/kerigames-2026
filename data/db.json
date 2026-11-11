@@ -1,0 +1,217 @@
+{
+  "version": 1,
+  "competitions": [
+    {
+      "id": "cs2-2026-27",
+      "game": "Counter-Strike 2",
+      "short": "CS2",
+      "label": "CS2 · 2026/27",
+      "teamSize": 5,
+      "bestOf": 1,
+      "winPoints": 10,
+      "drawPoints": 0,
+      "noShowPenalty": 10,
+      "allowDraw": false,
+      "state": "live"
+    },
+    {
+      "id": "fc26-2026-27",
+      "game": "EA SPORTS FC",
+      "short": "FC",
+      "label": "FC · 2026/27",
+      "teamSize": 1,
+      "bestOf": 1,
+      "winPoints": 3,
+      "drawPoints": 1,
+      "noShowPenalty": 0,
+      "allowDraw": true,
+      "state": "live"
+    },
+    {
+      "id": "rl-2026-27",
+      "game": "Rocket League",
+      "short": "RL",
+      "label": "RL · 2026/27",
+      "teamSize": 3,
+      "bestOf": 3,
+      "winPoints": 3,
+      "drawPoints": 0,
+      "noShowPenalty": 0,
+      "allowDraw": false,
+      "state": "soon"
+    }
+  ],
+  "teams": [
+    {
+      "id": "t1",
+      "comp": "cs2-2026-27",
+      "name": "Próba Alfa",
+      "captain": "proba.alfa@keri.mako.hu",
+      "players": [
+        "Kovács Anna",
+        "Tóth Bence",
+        "Szabó Csilla",
+        "Nagy Dávid",
+        "Kiss Erik"
+      ],
+      "teacher": "Teszt Tanár",
+      "klass": "",
+      "status": "approved",
+      "createdAt": "2026-11-11T23:03:43.872Z",
+      "approvedAt": "2026-11-11T23:03:43.901Z"
+    },
+    {
+      "id": "t2",
+      "comp": "cs2-2026-27",
+      "name": "Próba Béta",
+      "captain": "proba.beta@keri.mako.hu",
+      "players": [
+        "Farkas Gábor",
+        "Balogh Hanna",
+        "Molnár Iván",
+        "Varga Júlia",
+        "Lakatos Kornél"
+      ],
+      "teacher": "Teszt Tanár",
+      "klass": "",
+      "status": "approved",
+      "createdAt": "2026-11-11T23:03:43.891Z",
+      "approvedAt": "2026-11-11T23:03:43.906Z"
+    }
+  ],
+  "matches": [
+    {
+      "id": "m1",
+      "comp": "cs2-2026-27",
+      "round": 2,
+      "stage": "group",
+      "a": "t1",
+      "b": "t2",
+      "date": "2026-11-26",
+      "time": "14:00",
+      "room": "304-es terem",
+      "bestOf": 1,
+      "scoreA": "",
+      "scoreB": "",
+      "status": "scheduled",
+      "reportedBy": ""
+    }
+  ],
+  "news": [
+    {
+      "id": "n1",
+      "date": "2026-11-02",
+      "tag": "Frissítés",
+      "title": "Naptár frissítve: ünnepek, szünetek, tanítási napok",
+      "link": "#naptar",
+      "season": "2026/27"
+    },
+    {
+      "id": "n2",
+      "date": "2026-10-23",
+      "tag": "Hír",
+      "title": "Őszi szünet október 23. – november 1. — nincs tanítás",
+      "link": "#naptar",
+      "season": "2026/27"
+    },
+    {
+      "id": "n3",
+      "date": "2026-09-01",
+      "tag": "Szezon",
+      "title": "Elindult a 2026/27-es tanév — nyílik a nevezés",
+      "link": "#jelentkezes",
+      "season": "2026/27"
+    }
+  ],
+  "events": [
+    {
+      "id": "e1",
+      "date": "2026-11-18",
+      "time": "14:00",
+      "type": "match",
+      "title": "2. forduló",
+      "note": "Meccsek a 304-es teremben 14:00-tól.",
+      "comp": "cs2-2026-27",
+      "round": 2
+    },
+    {
+      "id": "e2",
+      "date": "2026-11-25",
+      "time": "14:00",
+      "type": "match",
+      "title": "3. forduló",
+      "note": "Az utolsó csoportkör a 304-es teremben.",
+      "comp": "cs2-2026-27",
+      "round": 3
+    }
+  ],
+  "log": [
+    {
+      "id": "l8",
+      "at": "2026-11-11T23:03:43.911Z",
+      "actor": "tanar@keri.mako.hu",
+      "action": "Mérkőzés beütemezve",
+      "detail": "Próba Alfa vs Próba Béta · 2026.11.26. 14:00 · 304-es terem"
+    },
+    {
+      "id": "l7",
+      "at": "2026-11-11T23:03:43.906Z",
+      "actor": "tanar@keri.mako.hu",
+      "action": "Nevezés jóváhagyva",
+      "detail": "Próba Béta"
+    },
+    {
+      "id": "l6",
+      "at": "2026-11-11T23:03:43.901Z",
+      "actor": "tanar@keri.mako.hu",
+      "action": "Nevezés jóváhagyva",
+      "detail": "Próba Alfa"
+    },
+    {
+      "id": "l5",
+      "at": "2026-11-11T23:03:43.891Z",
+      "actor": "tanar@keri.mako.hu",
+      "action": "Nevezés beérkezett",
+      "detail": "Próba Béta · CS2"
+    },
+    {
+      "id": "l4",
+      "at": "2026-11-11T23:03:43.872Z",
+      "actor": "tanar@keri.mako.hu",
+      "action": "Nevezés beérkezett",
+      "detail": "Próba Alfa · CS2"
+    },
+    {
+      "id": "l3",
+      "at": "2026-11-11T23:03:43.708Z",
+      "actor": "tanár",
+      "action": "Adatok visszaállítva",
+      "detail": "A demo alaphelyzet betöltve"
+    },
+    {
+      "id": "l2",
+      "at": "2026-11-11T19:21:16.742Z",
+      "actor": "tanár",
+      "action": "Adatok visszaállítva",
+      "detail": "A demo alaphelyzet betöltve"
+    },
+    {
+      "id": "l1",
+      "at": "2026-11-11T17:00:00.000Z",
+      "actor": "tanár",
+      "action": "Adatok előkészítve",
+      "detail": "7 mérkőzés, 13 csapat — kezdő állapot"
+    }
+  ],
+  "seekers": [],
+  "votes": [
+    {
+      "id": "v1",
+      "by": "kovács anna",
+      "game": "valorant",
+      "at": "2026-11-11T23:05:14.849Z"
+    }
+  ],
+  "requests": [],
+  "settings": {}
+}
